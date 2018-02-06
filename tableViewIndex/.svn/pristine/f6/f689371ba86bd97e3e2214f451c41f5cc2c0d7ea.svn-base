@@ -1,0 +1,31 @@
+//
+//  QueryResultModel.m
+//  GFB
+//
+//  Created by 维信金科 on 16/9/26.
+//  Copyright © 2016年 Vision Credit  Financial Technology Cpmpany Limited. All rights reserved.
+//
+
+#import "QueryResultModel.h"
+
+@implementation QueryResultModel
+
+- (float)monthAmount
+{
+    _monthAmount = self.PersonalMonthPayAmount + self.CompanyMonthPayAmount;
+    return _monthAmount;
+}
+
+- (NSString *)queryTime
+{
+    _queryTime = [TimeUtils getSystemTimeStringWithFormat:@"yyyy-MM-dd"];
+    return _queryTime;
+}
+
+- (float)TotalAmount
+{
+    return _TotalAmount;
+}
+
+@end
+

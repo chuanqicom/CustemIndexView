@@ -1,0 +1,139 @@
+//
+//  GFBIndexView.m
+//  GFB
+//
+//  Created by bin xie on 2016/11/2.
+//  Copyright © 2016年 Shanghai Aopai Data Technology Co., Ltd. All rights reserved.
+//
+
+#import "GFBIndexView.h"
+
+#define RGB(R,G,B,A)  [UIColor colorWithRed:(double)R/255.0f green:(double)G/255.0f blue:(double)B/255.0f alpha:A]
+
+@implementation GFBIndexView
+
+- (id)initWithFrame:(CGRect)frame
+{
+    if (self = [super initWithFrame:frame])
+    {
+        self.backgroundColor = [UIColor colorWithRed:210/255.0 green:210/255.0 blue:210/255.0 alpha:1];
+    }
+    
+    return self;
+}
+
+#pragma mark - 画 index
+- (void)setup
+{
+    shapeLayer = [CAShapeLayer layer];
+    shapeLayer.lineWidth = 1.0f;
+    shapeLayer.fillColor = [UIColor clearColor].CGColor;
+    shapeLayer.lineJoin = kCALineCapSquare;
+    shapeLayer.strokeColor = [[UIColor clearColor] CGColor];
+    shapeLayer.strokeEnd = 1.0f;
+    // 设置圆角
+    self.layer.cornerRadius = 15.f;
+    self.layer.masksToBounds = YES;
+}
+
+- (void)setTableViewIndexDelegate:(id<GFBIndexViewDelegate>)tableViewIndexDelegate
+{
+    _tableViewIndexDelegate = tableViewIndexDelegate;
+    self.letters = [self.tableViewIndexDelegate tableViewIndexTitle:self];
+    isLayedOut = NO;
+    [self layoutSubviews];
+}
+
+#pragma mark - index适配布局
+- (void)layoutSubviews
+{
+    [super layoutSubviews];
+    [self setup];
+    
+    if (!isLayedOut)
+    {
+        [self.layer.sublayers makeObjectsPerformSelector:@selector(removeFromSuperlayer)];
+        
+        shapeLayer.frame = (CGRect) {.origin = CGPointZero, .size = self.layer.frame.size};
+        UIBezierPath *bezierPath = [UIBezierPath bezierPath];
+        [bezierPath moveToPoint:CGPointZero];
+        [bezierPath addLineToPoint:CGPointMake(0, self.frame.size.height)];
+        
+        letterHeight = 22;     // 索引文字框的高度
+        CGFloat fontSize = 16; // 字体大小
+        
+        if (letterHeight < 18)
+        {
+            fontSize = 13;
+        }
+        
+        [self.letters enumerateObjectsUsingBlock:^(NSString *letter, NSUInteger idx, BOOL *stop){
+            
+            CGFloat originY = idx * letterHeight;
+            
+            // 设置索引条 文字大小 文字内容  文字位置
+            CATextLayer *ctl = [self textLayerWithSize:fontSize
+                                                string:letter
+                                              andFrame:CGRectMake(0, originY, self.frame.size.width, letterHeight)];
+            
+            [self.layer addSublayer:ctl];
+            [bezierPath moveToPoint:CGPointMake(0, originY)];
+            [bezierPath addLineToPoint:CGPointMake(ctl.frame.size.width, originY)];
+        }];
+        
+        shapeLayer.path = bezierPath.CGPath;
+        [self.layer addSublayer:shapeLayer];
+        
+        isLayedOut = YES;
+    }
+}
+
+#pragma mark - 设置index文字属性
+- (CATextLayer*)textLayerWithSize:(CGFloat)size string:(NSString*)string andFrame:(CGRect)frame
+{
+    CATextLayer *indexText = [CATextLayer layer];
+    [indexText setFont:@"ArialMT"];
+    [indexText setFontSize:size];
+    [indexText setFrame:frame];
+    [indexText setAlignmentMode:kCAAlignmentCenter];
+    [indexText setContentsScale:[[UIScreen mainScreen] scale]];
+    [indexText setForegroundColor:RGB(49, 49, 49, 1).CGColor];
+    [indexText setString:string];
+    return indexText;
+}
+
+#pragma mark - 手势触发的事件
+- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    [super touchesBegan:touches withEvent:event];
+    [self sendEventToDelegate:event];
+    [self.tableViewIndexDelegate tableViewIndexTouchesBegan:self];
+}
+
+- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    [super touchesMoved:touches withEvent:event];
+    [self sendEventToDelegate:event];
+}
+
+- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    [self.tableViewIndexDelegate tableViewIndexTouchesEnd:self];
+}
+
+- (void)sendEventToDelegate:(UIEvent*)event
+{
+    UITouch *touch = [[event allTouches] anyObject];
+    CGPoint point = [touch locationInView:self];
+    
+    NSInteger indx = ((NSInteger) floorf(point.y) / letterHeight);
+    
+    if (indx< 0 || indx > self.letters.count - 1)
+    {
+        return;
+    }
+    
+    [self.tableViewIndexDelegate tableViewIndex:self didSelectSectionAtIndex:indx withTitle:self.letters[indx]];
+}
+
+@end

@@ -1,0 +1,18 @@
+//
+//  AccumulationFundDetail.h
+//  GFB
+//
+//  Created by 维信金科 on 16/9/24.
+//  Copyright © 2016年 Vision Credit  Financial Technology Cpmpany Limited. All rights reserved.
+//
+
+#import <Foundation/Foundation.h>
+
+@interface AccumulationFundDetail : NSObject
+
+@property (nonatomic,   copy) NSString  *LoginType;
+@property (nonatomic,   copy) NSString  *HasVerCode;
+@property (nonatomic,   copy) NSString  *Description;
+@property (nonatomic, strong) NSArray   *FormParams;   //(FormParamsModel)
+
+@end

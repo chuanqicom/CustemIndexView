@@ -1,0 +1,137 @@
+//
+//  IndexView.m
+//  test
+//
+//  Created by wangliang on 16/12/9.
+//  Copyright © 2016年 wangliang. All rights reserved.
+//
+
+#import "IndexView.h"
+
+@interface IndexView()<UITableViewDelegate,UITableViewDataSource>
+
+@property(nonatomic,strong)UITableView *myTab;
+/** item的高 */
+@property(nonatomic,assign)CGFloat itemH;
+/** 头部和底部的高 */
+@property(nonatomic,assign)CGFloat headerFooterH;
+/** 中部显示的label */
+@property(nonatomic,strong)UILabel *centerLabel;
+/** 数据数组 */
+@property(nonatomic,strong)NSArray *listArray;
+
+
+@end
+
+@implementation IndexView
+
+- (instancetype)initWithFrame:(CGRect)frame headerFooterViewHeight:(CGFloat)headerFooterH andListArray:(NSArray*)listArray
+{
+    if (self = [super initWithFrame:frame]) {
+        self.backgroundColor = [UIColor grayColor];
+        self.layer.cornerRadius = 15;
+        self.layer.masksToBounds = YES;
+        self.itemH = (frame.size.height - 2*headerFooterH)/listArray.count;
+        self.headerFooterH = headerFooterH;
+        self.listArray = listArray;
+        [self setUpUI];
+    }
+
+    return self;
+}
+
+- (void)setUpUI{
+
+    CGFloat width = self.frame.size.width;
+    UIView *headerView = [[UIView alloc]initWithFrame:CGRectMake(0, 0,width, _headerFooterH)];
+    [self addSubview:headerView];
+
+    self.myTab = [[UITableView alloc]initWithFrame:CGRectMake(0, _headerFooterH,width, self.frame.size.height - 2*_headerFooterH) style:UITableViewStylePlain];
+    self.myTab.userInteractionEnabled = NO;
+    self.myTab.delegate = self;
+    self.myTab.separatorStyle = UITableViewScrollPositionNone;
+    self.myTab.dataSource = self;
+    [self addSubview:_myTab];
+    [_myTab registerClass:[UITableViewCell class] forCellReuseIdentifier:@"cell"];
+
+    UIView *footerView = [[UIView alloc]initWithFrame:CGRectMake(0, CGRectGetMaxY(_myTab.frame),width, _headerFooterH)];
+    [self addSubview:footerView];
+}
+
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    return _listArray.count;
+}
+
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell" forIndexPath:indexPath];
+
+    UILabel *label = [[UILabel alloc]initWithFrame:cell.contentView.bounds];
+    label.textAlignment = NSTextAlignmentCenter;
+    label.font = [UIFont systemFontOfSize:21 weight:1];
+    [cell.contentView addSubview:label];
+    cell.contentView.backgroundColor = [UIColor grayColor];
+    label.text = _listArray[indexPath.row];
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+
+    return cell;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
+    return _itemH;
+}
+
+
+- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event{
+    UITouch *touch = [touches anyObject];
+    CGPoint point = [touch locationInView:_myTab];
+    if(point.y >= _myTab.frame.size.height) return;
+    if(point.y <= 0) return;
+    int pointIndex = point.y / _myTab.frame.size.height *_listArray.count;
+    self.currentItem = _listArray[pointIndex];
+    if(_callBack) _callBack(_currentItem,pointIndex);
+    if ([self.delegate respondsToSelector:@selector(completeWithIndex:itemStr:indexView:)]) {
+        [self.delegate completeWithIndex:pointIndex itemStr:_currentItem indexView:self];
+    }
+
+}
+
+
+- (void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event{
+    UITouch *touch = [touches anyObject];
+    CGPoint point = [touch locationInView:_myTab];
+    if(point.y >= _myTab.frame.size.height) return;
+    if(point.y <= 0) return;
+    int pointIndex = point.y / _myTab.frame.size.height *_listArray.count;
+    self.currentItem = _listArray[pointIndex];
+    if(_callBack) _callBack(_currentItem,pointIndex);
+    if ([self.delegate respondsToSelector:@selector(completeWithIndex:itemStr:indexView:)]) {
+        [self.delegate completeWithIndex:pointIndex itemStr:_currentItem indexView:self];
+    }
+}
+
+
+- (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+{
+    UITouch *touch = [touches anyObject];
+    CGPoint point = [touch locationInView:_myTab];
+    if(point.y >= _myTab.frame.size.height) return;
+    if(point.y <= 0) return;
+    int pointIndex = point.y / _myTab.frame.size.height *_listArray.count;
+    self.currentItem = _listArray[pointIndex];
+    if(_callBack) _callBack(_currentItem,pointIndex);
+    if ([self.delegate respondsToSelector:@selector(completeWithIndex:itemStr:indexView:)]) {
+        [self.delegate completeWithIndex:pointIndex itemStr:_currentItem indexView:self];
+    }
+}
+
+
+- (void)dealloc
+{
+    
+}
+
+
+@end

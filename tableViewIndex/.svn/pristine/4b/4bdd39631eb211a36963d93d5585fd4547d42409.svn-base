@@ -1,0 +1,16 @@
+//
+//  GFBRSA.h
+//  GFB
+//
+//  Created by 维信金科 on 16/12/8.
+//  Copyright © 2016年 Shanghai Aopai Data Technology Co., Ltd. All rights reserved.
+//
+
+#import <Foundation/Foundation.h>
+
+@interface GFBRSA : NSObject
+
++ (NSString *)encryptString:(NSString *)str publicKey:(NSString *)pubKey;
++ (NSData *)encryptData:(NSData *)data publicKey:(NSString *)pubKey;
+
+@end

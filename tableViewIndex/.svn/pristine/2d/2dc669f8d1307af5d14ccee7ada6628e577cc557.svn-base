@@ -1,0 +1,73 @@
+//
+//  GFBCardScrollView.h
+//  GFB
+//
+//  Created by bin xie on 2016/11/14.
+//  Copyright © 2016年 Shanghai Aopai Data Technology Co., Ltd. All rights reserved.
+//
+
+#import <UIKit/UIKit.h>
+
+typedef enum
+{
+    FlowViewOrientationHorizontal = 0,
+    FlowViewOrientationVertical
+    
+} FlowViewOrientation;
+
+typedef enum
+{
+    PageDirectionPrevious = 0,
+    PageDirectionDown
+    
+} PageDirectionE;
+
+@protocol GFBCardScrollViewDataSource;
+@protocol GFBCardScrollViewDelegate;
+
+@interface GFBCardScrollView : UIView<UIScrollViewDelegate>
+
+@property (nonatomic, assign) FlowViewOrientation   orientation;
+@property (nonatomic, assign) BOOL                  needsReload;
+@property (nonatomic, assign) BOOL                  needRefresh;
+@property (nonatomic, assign) CGSize                pageSize;         //size of page
+@property (nonatomic, assign) NSInteger             pageCount;        //total page count
+@property (nonatomic, assign) NSInteger             currentPageIndex;
+@property (nonatomic, assign) NSRange               visibleRange;
+@property (nonatomic, assign) CGFloat               minimumPageAlpha; //default is 1.0
+@property (nonatomic, assign) CGFloat               minimumPageScale; //default is 1.0
+@property (nonatomic, strong) NSMutableArray        *reusableCells;   //UnseedCell
+@property (nonatomic, strong) NSMutableArray        *inUseCells;      //using Cell
+@property (nonatomic, strong) UIScrollView          *scrollView;
+@property (nonatomic, strong) UIImageView           *defaultImageView;
+
+@property (nonatomic, weak) id <GFBCardScrollViewDataSource> dataSource;
+@property (nonatomic, weak) id <GFBCardScrollViewDelegate>   delegate;
+
+- (void)reloadData;
+- (void)scrollToNextPage;
+- (UIView *)cellForItemAtCurrentIndex:(NSInteger)currentIndex;
+
+@end
+
+@protocol  GFBCardScrollViewDelegate<NSObject>
+
+- (void)didReloadData:(UIView *)cell cellForPageAtIndex:(NSInteger)index;
+
+@optional
+
+- (void)didScrollToPage:(NSInteger)pageNumber inFlowView:(GFBCardScrollView *)flowView;
+- (void)didSelectItemAtIndex:(NSInteger)index inFlowView:(GFBCardScrollView *)flowView;
+
+@end
+
+@protocol GFBCardScrollViewDataSource <NSObject>
+
+// Return the number of views.
+- (NSInteger)numberOfPagesInFlowView:(GFBCardScrollView *)flowView;
+- (CGSize)sizeForPageInFlowView:(GFBCardScrollView *)flowView;
+
+// Reusable cells
+- (UIView *)flowView:(GFBCardScrollView *)flowView cellForPageAtIndex:(NSInteger)index;
+
+@end

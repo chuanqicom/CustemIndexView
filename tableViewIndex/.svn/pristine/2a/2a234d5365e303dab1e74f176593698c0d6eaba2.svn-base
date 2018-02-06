@@ -1,0 +1,20 @@
+//
+//  ProvidentFundLoginViewController.h
+//  GFB
+//
+//  Created by xiebin on 16/9/23.
+//  Copyright © 2016年 Vision Credit  Financial Technology Cpmpany Limited. All rights reserved.
+//
+
+#import "GFBBaseViewController.h"
+#import "CityDetailModel.h"
+#import "AccumulationFundDetail.h"
+
+@interface ProvidentFundLoginViewController : GFBBaseViewController
+
+@property (nonatomic, strong) CityDetailModel          *detailModel;
+@property (nonatomic, strong) AccumulationFundDetail   *fundDetailModel;
+@property (nonatomic,   copy) NSString                 *tokenValue;
+@property (nonatomic,   copy) NSString                 *randomCodeBase64;
+
+@end

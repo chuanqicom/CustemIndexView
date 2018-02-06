@@ -1,0 +1,13 @@
+//
+//  GuidePageVC.h
+//  AJPAPP
+//
+//  Created by xiebin on 16/8/31.
+//  Copyright © 2016年 xiebin. All rights reserved.
+//
+
+#import <UIKit/UIKit.h>
+
+@interface GuidePageVC : UIViewController
+
+@end

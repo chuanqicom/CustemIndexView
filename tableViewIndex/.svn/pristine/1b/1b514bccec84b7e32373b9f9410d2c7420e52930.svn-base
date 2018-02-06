@@ -1,0 +1,79 @@
+//
+//  CustomPopUpView.h
+//  WrapperClass
+//
+//  Created by xiebin on 16/10/6.
+//  Copyright © 2016年 xiebin. All rights reserved.
+//
+
+#import <UIKit/UIKit.h>
+#import "UIView+GFBExtension.h"
+
+#define SCREEN_WIDTH  ([UIScreen mainScreen].bounds.size.width)
+#define SCREEN_HEIGHT ([UIScreen mainScreen].bounds.size.height)
+#define BGVIEW_WIDTH  (self.bgView.frame.size.width)
+#define BGVIEW_HEIGHT (self.bgView.frame.size.height)
+
+typedef NS_ENUM(NSInteger,PopUpViewType)
+{
+    PopUpViewPrompt,   //提示
+    PopUpViewWarning,  //警告
+    PopUpViewImage,    //带图
+    PopUpViewBank,     //银行
+    PopSweetAlert1,
+    PopSweetAlert2,     // 温馨提示
+    PopUpViewCardNo   // 身份证号码校验
+};
+
+@protocol CustomPopUpViewDelegate <NSObject>
+
+- (void)customPopUpViewConfirmBtnAction;
+- (void)customPopUpViewcancelBtnAction;
+
+@end
+
+@interface CustomPopUpView : UIView
+
+// 标题
+@property (nonatomic,strong) UILabel      *titleLb;
+
+// 信用卡标题
+@property (nonatomic,strong) UILabel      *creditCardLb;
+
+// 借记卡标题
+@property (nonatomic,strong) UILabel      *debitCardLb;
+
+// 提示内容
+@property (nonatomic,strong) UILabel      *promptContent;
+@property (nonatomic,strong) UILabel      *debitCardContent;
+
+// 确定按钮
+@property (nonatomic,strong) UIButton     *confirmBtn;
+
+// 取消按钮
+@property (nonatomic,strong) UIButton     *cancelBtn;
+
+// 弹窗背景View
+@property (nonatomic,strong) UIView       *bgView;
+
+// 分隔线
+@property (nonatomic,strong) UIView       *horizontalLine;
+@property (nonatomic,strong) UIView       *verticalLine;
+
+// 银行头部颜色View
+@property (nonatomic,strong) UIView       *topView;
+
+// 弹窗图片
+@property (nonatomic,strong) UIImageView  *topImageView;
+
+@property (nonatomic) PopUpViewType        PopUpViewType;
+
+@property (nonatomic, assign) id<CustomPopUpViewDelegate> delegate;
+
+- (instancetype)initWithFrame:(CGRect)frame
+            WithPopUpViewType:(PopUpViewType)popUpViewType
+                    WithTitle:(NSString *)title
+              WithPromptTitle:(NSString *)promptTitle
+                    WithImage:(UIImage  *)image;
+
+@end

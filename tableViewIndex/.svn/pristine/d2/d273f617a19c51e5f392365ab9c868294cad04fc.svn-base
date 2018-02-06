@@ -1,0 +1,74 @@
+//
+//  CreditViewController.m
+//  CCS
+//
+//  Created by 维信金科 on 16/12/26.
+//  Copyright © 2016年 OrangeCat. All rights reserved.
+//
+
+#import "CreditViewController.h"
+#import <JavaScriptCore/JavaScriptCore.h>
+
+@interface CreditViewController () <UIWebViewDelegate>
+@property (nonatomic, strong) UIWebView *web;
+@property (nonatomic, strong) JSValue     *jsValue;
+@end
+
+@implementation CreditViewController
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    [GFBProgressHUD showBlockHUD];
+    self.web = [[UIWebView alloc]initWithFrame:self.view.frame];
+    [self.view addSubview:_web];
+    self.web.delegate = self;
+    NSString *H5URLStr = [NSString stringWithFormat:@"%@%@",BaseURL,CREDITLOGIN];
+    [_web loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:H5URLStr]]];
+}
+
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+
+- (NSString *)navigationTitle{
+    return @"征信认证";
+}
+
+- (void)webViewDidFinishLoad:(UIWebView *)webView{
+    
+    [GFBProgressHUD dismiss];
+    __weak typeof(self)blockSelf = self;
+    JSContext *context = [self.web valueForKeyPath:@"documentView.webView.mainFrame.javaScriptContext"];
+    context[@"goBackHome"] = ^() {
+        
+        [blockSelf goToHomePageViewController];
+    };
+
+}
+
+
+#pragma mark - 返回首页
+- (void)goToHomePageViewController
+{
+    [self dismissViewControllerAnimated:NO completion:nil];
+}
+
+
+- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType{
+
+    return YES;
+}
+
+
+/*
+#pragma mark - Navigation
+
+// In a storyboard-based application, you will often want to do a little preparation before navigation
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+    // Get the new view controller using [segue destinationViewController].
+    // Pass the selected object to the new view controller.
+}
+*/
+
+@end

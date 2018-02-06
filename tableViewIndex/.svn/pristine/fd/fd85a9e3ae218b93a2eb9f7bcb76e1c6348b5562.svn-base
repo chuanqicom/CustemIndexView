@@ -1,0 +1,67 @@
+//
+//  GFBIndexView.h
+//  GFB
+//
+//  Created by bin xie on 2016/11/2.
+//  Copyright © 2016年 Shanghai Aopai Data Technology Co., Ltd. All rights reserved.
+//
+
+#import <UIKit/UIKit.h>
+
+@protocol GFBIndexViewDelegate;
+
+@interface GFBIndexView : UIView
+{
+    BOOL           isLayedOut;
+    CAShapeLayer   *shapeLayer;
+    CGFloat        letterHeight;
+}
+
+@property (nonatomic, strong) NSArray  *letters;
+
+@property (nonatomic, strong) NSArray  *indexes;
+
+@property (nonatomic,   weak) id <GFBIndexViewDelegate> tableViewIndexDelegate;
+
+@end
+
+@protocol GFBIndexViewDelegate <NSObject>
+
+/**
+ *  触摸到索引时触发
+ *
+ *  tableViewIndex 触发didSelectSectionAtIndex对象
+ *  index          索引下标
+ *  title          索引文字
+ */
+- (void)tableViewIndex:(GFBIndexView *)tableViewIndex didSelectSectionAtIndex:(NSInteger)index withTitle:(NSString *)title;
+
+
+/**
+ *  开始触摸索引
+ *
+ *  tableViewIndex 触发tableViewIndexTouchesBegan对象
+ */
+- (void)tableViewIndexTouchesBegan:(GFBIndexView *)tableViewIndex;
+
+
+/**
+ *  触摸索引结束
+ *
+ *  tableViewIndex
+ */
+- (void)tableViewIndexTouchesEnd:(GFBIndexView *)tableViewIndex;
+
+
+/**
+ *  TableView中右边右边索引title
+ *
+ *  tableViewIndex 触发tableViewIndexTitle对象
+ *
+ *  索引title数组
+ */
+- (NSArray *)tableViewIndexTitle:(GFBIndexView *)tableViewIndex;
+
+@end
+
+

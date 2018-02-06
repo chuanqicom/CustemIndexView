@@ -1,0 +1,23 @@
+//
+//  AccumulationFundSettingResult.m
+//  GFB
+//
+//  Created by 维信金科 on 16/9/24.
+//  Copyright © 2016年 Vision Credit  Financial Technology Cpmpany Limited. All rights reserved.
+//
+
+#import "AccumulationFundSettingResult.h"
+
+@implementation AccumulationFundSettingResult
+
++ (NSDictionary *)objectClassInArray
+{
+    return @{@"FormSettings" : @"AccumulationFundDetail"};
+}
+
++ (NSDictionary *)replacedKeyFromPropertyName
+{
+    return @{@"rid": @"id"};
+}
+
+@end

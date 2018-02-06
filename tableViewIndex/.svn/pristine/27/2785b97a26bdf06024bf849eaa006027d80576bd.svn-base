@@ -1,0 +1,395 @@
+//
+//  DataManager.m
+//  GFB
+//
+//  Created by bin xie on 2016/10/30.
+//  Copyright © 2016年 Shanghai Aopai Data Technology Co., Ltd. All rights reserved.
+//
+
+#import "DataManager.h"
+
+@implementation DataManager
+
+@synthesize
+lastVersion=_lastVersion,
+token = _token,
+appId = _appId,
+imagePath = _imagePath,
+customerId = _customerId,
+identityNo = _identityNo,
+identityExpires = _identityExpires,
+realName = _realName,
+mobile = _mobile,
+page = _page,
+isShowLoginVC = _isShowLoginVC,
+homeNeedRequestData = _homeNeedRequestData,
+educationDegree = _educationDegree,
+marryStatus = _marryStatus,
+identityPerson = _identityPerson,
+noReadCount = _noReadCount,
+address = _address;
+
++ (DataManager *)shareManager
+{
+    static DataManager *sharedInstance = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        
+        if (sharedInstance == nil)
+        {
+            sharedInstance = [[self alloc] init];
+        }
+    });
+    return sharedInstance;
+}
+
+#pragma mark - 版本号
+- (void)setLastVersion:(NSString *)lastVersion
+{
+    _lastVersion = lastVersion;
+    
+    [[NSUserDefaults standardUserDefaults] setObject:_lastVersion forKey:LASTVERSION];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+- (NSString *)lastVersion
+{
+    _lastVersion = [[NSUserDefaults standardUserDefaults] objectForKey:LASTVERSION];
+    
+    if (!_lastVersion)
+    {
+        _lastVersion = @"";
+    }
+    return _lastVersion;
+}
+
+#pragma mark - 登录token
+- (void)setToken:(NSString *)token
+{
+    _token = token;
+    
+    [[NSUserDefaults standardUserDefaults] setObject:_token forKey:TOKEN];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+- (NSString *)token
+{
+    _token = [[NSUserDefaults standardUserDefaults] objectForKey:TOKEN];
+    
+    if (!_token)
+    {
+        _token = @"";
+    }
+    return _token;
+}
+
+#pragma mark - appId
+- (void)setAppId:(NSString *)appId
+{
+    _appId = appId;
+    [[NSUserDefaults standardUserDefaults] setObject:_appId forKey:APPID];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+- (NSString *)appId
+{
+    _token = [[NSUserDefaults standardUserDefaults] objectForKey:APPID];
+    
+    if (!_token)
+    {
+        _token = @"";
+    }
+    return _token;
+}
+
+#pragma mark - 我的头像图片
+- (void)setImagePath:(NSString *)imagePath
+{
+    _imagePath = imagePath;
+    
+    [[NSUserDefaults standardUserDefaults] setObject:_imagePath forKey:IMAGE_PATH];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+- (NSString *)imagePath
+{
+    _imagePath = [[NSUserDefaults standardUserDefaults] objectForKey:IMAGE_PATH];
+    
+    if (!_imagePath)
+    {
+        _imagePath = @"";
+    }
+    return _imagePath;
+}
+
+#pragma mark - CustomerId
+- (void)setCustomerId:(NSNumber *)customerId
+{
+    _customerId = customerId;
+    
+    [[NSUserDefaults standardUserDefaults] setObject:_customerId forKey:CUSTOMERID];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+- (NSNumber *)customerId
+{
+    _customerId = [[NSUserDefaults standardUserDefaults] objectForKey:CUSTOMERID];
+    
+    if (!_customerId)
+    {
+        _customerId = @(0);
+    }
+    return _customerId;
+}
+
+#pragma mark - 身份证号
+- (void)setIdentityNo:(NSString *)identityNo
+{
+    _identityNo = identityNo;
+    
+    [[NSUserDefaults standardUserDefaults] setObject:_identityNo forKey:IDENTITY_NO];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+- (NSString *)identityNo
+{
+    _identityNo = [[NSUserDefaults standardUserDefaults] objectForKey:IDENTITY_NO];
+    
+    if (!_identityNo)
+    {
+        _identityNo = @"";
+    }
+    return _identityNo;
+}
+
+#pragma mark - 身份证号过期日期
+- (void)setIdentityExpires:(NSString *)identityExpires
+{
+    _identityExpires = identityExpires;
+    
+    [[NSUserDefaults standardUserDefaults] setObject:_identityExpires forKey:IDENTITY_EXPIRES];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+- (NSString *)identityExpires
+{
+    _identityExpires = [[NSUserDefaults standardUserDefaults] objectForKey:IDENTITY_EXPIRES];
+    
+    if (!_identityExpires)
+    {
+        _identityExpires = @"";
+    }
+    return _identityExpires;
+}
+
+#pragma mark - 真实姓名
+- (void)setRealName:(NSString *)realName
+{
+    _realName = realName;
+    
+    [[NSUserDefaults standardUserDefaults] setObject:_realName forKey:REAL_NAME];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+- (NSString *)realName
+{
+    _realName = [[NSUserDefaults standardUserDefaults] objectForKey:REAL_NAME];
+    
+    if (!_realName)
+    {
+        _realName = @"";
+    }
+    return _realName;
+}
+
+#pragma mark - 手机号码
+- (void)setMobile:(NSString *)mobile
+{
+    _mobile = mobile;
+    
+    [[NSUserDefaults standardUserDefaults] setObject:_mobile forKey:MODILE];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+- (NSString *)mobile
+{
+    _mobile = [[NSUserDefaults standardUserDefaults] objectForKey:MODILE];
+    
+    if (!_mobile)
+    {
+        _mobile = @"";
+    }
+    return _mobile;
+}
+
+#pragma mark - 首页page状态值
+- (void)setPage:(NSString *)page
+{
+    _page = page;
+    
+    [[NSUserDefaults standardUserDefaults] setObject:page forKey:PAGE];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+- (NSString *)page
+{
+    _page = [[NSUserDefaults standardUserDefaults] objectForKey:PAGE];
+    
+    if (!_page)
+    {
+        _page = @"";
+    }
+    return _page;
+}
+
+#pragma mark - 身份认证 学历选择
+- (void)setEducationDegree:(NSString *)educationDegree
+{
+    _educationDegree = educationDegree;
+    
+    [[NSUserDefaults standardUserDefaults] setObject:_educationDegree forKey:EDUCATIONDEGREE];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+- (NSString *)educationDegree
+{
+    _educationDegree = [[NSUserDefaults standardUserDefaults] objectForKey:EDUCATIONDEGREE];
+    
+    if (!_educationDegree)
+    {
+        _educationDegree = @"";
+    }
+    return _educationDegree;
+}
+
+#pragma mark - 身份认证 婚姻状况
+- (void)setMarryStatus:(NSString *)marryStatus
+{
+    _marryStatus = marryStatus;
+    
+    [[NSUserDefaults standardUserDefaults] setObject:_marryStatus forKey:MARRYSTATUS];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+- (NSString *)marryStatus
+{
+    _marryStatus = [[NSUserDefaults standardUserDefaults] objectForKey:MARRYSTATUS];
+    
+    if (!_marryStatus)
+    {
+        _marryStatus = @"";
+    }
+    return _marryStatus;
+}
+
+#pragma mark - 身份认证 手持身份证保存状态
+- (void)setIdentityPerson:(NSString *)identityPerson
+{
+    _identityPerson = identityPerson;
+    
+    [[NSUserDefaults standardUserDefaults] setObject:_identityPerson forKey:IDENTITYPERSON];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+- (NSString *)identityPerson
+{
+    _identityPerson = [[NSUserDefaults standardUserDefaults] objectForKey:IDENTITYPERSON];
+    
+    if (!_identityPerson)
+    {
+        _identityPerson = @"";
+    }
+    return _identityPerson;
+}
+
+#pragma mark - 推送消息未读数
+- (void)setNoReadCount:(NSString *)noReadCount
+{
+    _noReadCount = noReadCount;
+    
+    [[NSUserDefaults standardUserDefaults] setObject:noReadCount forKey:NOREADCOUNT];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+- (NSString *)noReadCount
+{
+    _noReadCount = [[NSUserDefaults standardUserDefaults] objectForKey:NOREADCOUNT];
+    
+    if (!_noReadCount)
+    {
+        _noReadCount = @"";
+    }
+    return _noReadCount;
+}
+
+#pragma mark - 地址
+- (void)setAddress:(NSString *)address
+{
+    _address = address;
+    
+    [[NSUserDefaults standardUserDefaults] setObject:_address forKey:@"address"];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+- (NSString *)address
+{
+    _address = [[NSUserDefaults standardUserDefaults] objectForKey:@"address"];
+    
+    if (!_address)
+    {
+        _address = nil;
+    }
+    return _address;
+}
+
+
+#pragma mark - 是否登录 自动登录状态
+- (void)setIsShowLoginVC:(BOOL)isShowLoginVC
+{
+    _isShowLoginVC = isShowLoginVC;
+    
+    [[NSUserDefaults standardUserDefaults] setObject:@(_isShowLoginVC) forKey:IS_SHOW_LOGINVIEWCONTROLLER];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+- (BOOL)isShowLoginVC
+{
+    _isShowLoginVC = [[[NSUserDefaults standardUserDefaults] objectForKey:IS_SHOW_LOGINVIEWCONTROLLER] boolValue];
+    
+    if (!_isShowLoginVC)
+    {
+        _isShowLoginVC = NO;
+    }
+    return _isShowLoginVC;
+}
+
+#pragma mark - 是否需要重新请求
+- (void)setHomeNeedRequestData:(BOOL)homeNeedRequestData
+{
+    _homeNeedRequestData = homeNeedRequestData;
+    
+    [[NSUserDefaults standardUserDefaults] setObject:@(_homeNeedRequestData) forKey:HOME_NEED_REQUEST];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+- (BOOL)homeNeedRequestData
+{
+    _homeNeedRequestData = [[[NSUserDefaults standardUserDefaults] objectForKey:HOME_NEED_REQUEST] boolValue];
+    
+    if (!_homeNeedRequestData)
+    {
+        _homeNeedRequestData = NO;
+    }
+    return _homeNeedRequestData;
+}
+
+//重置Datamanager
++ (void)resetDataManager
+{
+    [DataManager shareManager].isShowLoginVC = NO;
+    [DataManager shareManager].homeNeedRequestData = NO;
+}
+
+
+
+@end

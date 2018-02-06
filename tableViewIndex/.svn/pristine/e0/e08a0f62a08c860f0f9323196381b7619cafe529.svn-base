@@ -1,0 +1,439 @@
+//
+//  ProvidentFundLoginViewController.m
+//  GFB
+//
+//  Created by xiebin on 16/9/23.
+//  Copyright © 2016年 Vision Credit  Financial Technology Cpmpany Limited. All rights reserved.
+//
+
+#import "ProvidentFundLoginViewController.h"
+#import "QueryResultsViewController.h"
+#import "ProvincesChooseViewController.h"
+#import "AccumulationFundDetail.h"
+#import "FormParamsModel.h"
+#import "AccumulationFundLoginCell.h"
+#import "AgreementViewController.h"
+#import "JSONKit.h"
+#import "CityChooseViewController.h"
+
+
+#define btnEnableColor ColorWith(@"ffc601")
+#define btnUnenableColor ColorWith(@"B5B5B5")
+
+@interface ProvidentFundLoginViewController () <UITableViewDelegate, UITableViewDataSource>
+
+@property (weak, nonatomic) IBOutlet UITableView    *mainTableView;
+@property (weak, nonatomic) IBOutlet UIButton       *agreeBtn;
+@property (weak, nonatomic) IBOutlet UIButton       *commitBtn;
+@property (weak, nonatomic) IBOutlet UIView         *bgView;
+@property (weak, nonatomic) IBOutlet UIView         *footView;
+@property (weak, nonatomic) IBOutlet UIView         *cityView;
+@property (weak, nonatomic) IBOutlet UILabel        *cityLb;
+
+
+@property (nonatomic, strong) AccumulationFundCityModel  *accumulationFundCityModel;
+@property (nonatomic, strong) NSMutableArray *querySectionTitles;
+
+//根据此数据确认列表tableview的样式 <FormParamsModel>
+@property (nonatomic, strong) NSMutableArray *formParamsArr;
+
+@property (nonatomic, strong) NSMutableDictionary *cellTextFStrDic;
+
+@end
+
+@implementation ProvidentFundLoginViewController
+// 懒加载实例化数组
+- (NSMutableArray *)querySectionTitles
+{
+    if (!_querySectionTitles)
+    {
+        _querySectionTitles = [NSMutableArray array];
+    }
+    return _querySectionTitles;
+}
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    self.cellTextFStrDic = [NSMutableDictionary dictionary];
+    
+    self.formParamsArr = [@[] mutableCopy];
+    [self.formParamsArr addObjectsFromArray:self.fundDetailModel.FormParams];
+    
+    [self.mainTableView registerNib:[UINib nibWithNibName:@"AccumulationFundLoginCell" bundle:nil] forCellReuseIdentifier:@"AccumulationFundLoginCell"];
+  
+    _cityLb.text = [NSString stringWithFormat:@"%@公积金",_detailModel.CityName];
+    self.cityView.layer.cornerRadius = 10.f;
+    self.cityView.layer.masksToBounds = YES;
+    
+    self.commitBtn.enabled = NO;
+    self.commitBtn.layer.cornerRadius = 10.f;
+    self.commitBtn.layer.masksToBounds = YES;
+    
+    self.agreeBtn.selected = YES;
+    self.agreeBtn.layer.cornerRadius = 9.f;
+    self.agreeBtn.layer.masksToBounds = YES;
+}
+
+- (NSString *)navigationTitle
+{
+    return @"公积金查询";
+}
+
+- (void)navLeftButtonAction
+{
+    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"TotalAmount"]){
+        
+        [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"TotalAmount"];
+        [[NSUserDefaults standardUserDefaults]synchronize];
+        [self.navigationController popToRootViewControllerAnimated:YES];
+    }
+    else
+        [super navLeftButtonAction];
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+    [self.view endEditing:YES];
+}
+
+
+#pragma mark - 清空界面和数据
+
+- (void)clearDataForUI{
+    
+    [self.cellTextFStrDic removeAllObjects];
+    NSArray *tfArr = [self.mainTableView visibleCells];
+    for (AccumulationFundLoginCell *cell in tfArr)
+    {
+        cell.cellContent.text = @"";
+    }
+    
+    [self.commitBtn setBackgroundColor:btnUnenableColor];
+    self.commitBtn.enabled = NO;
+}
+
+- (IBAction)toProvincesChooseViewControllerBtnAction:(UIButton *)sender
+{
+    BOOL totalAmount = [[NSUserDefaults standardUserDefaults] boolForKey:@"TotalAmount"];
+    if (!totalAmount) {
+        for (UIViewController *viewController in self.navigationController.viewControllers)
+        {
+            if ([viewController isMemberOfClass:[ProvincesChooseViewController class]])
+            {
+                [self.navigationController popToViewController:viewController animated:YES];
+            }
+        }
+    }else{
+        // 再次查看
+        [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"TotalAmount"];
+        [[NSUserDefaults standardUserDefaults]synchronize];
+        //请求
+        [self initializeCityListRequest];
+    }
+}
+
+
+- (IBAction)seeAgreementAction:(UIButton *)sender
+{
+    self.agreeBtn.selected = YES;
+    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
+    AccumulationFundLoginCell *cell = [_mainTableView cellForRowAtIndexPath:indexPath];
+    NSString *name = cell.cellContent.text;
+    
+    AgreementViewController *agreementVc = [[AgreementViewController alloc]init];
+    agreementVc.userName = name;
+    [self.navigationController pushViewController:agreementVc animated:YES];
+}
+
+
+#pragma mark - TableViewDelegate
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    return self.formParamsArr.count;
+}
+
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    AccumulationFundLoginCell *cell = [self.mainTableView dequeueReusableCellWithIdentifier:@"AccumulationFundLoginCell" forIndexPath:indexPath];
+    
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    
+    FormParamsModel *model = self.formParamsArr[indexPath.row];
+    model.codeImage64String = self.randomCodeBase64;
+    [cell cellWithData:model];
+    
+    __weak typeof(self)blockSelf = self;
+    cell.callBlock = ^(NSString *cellTextFStr,FormParamsModel *cellModel){
+        if (cellTextFStr.length != 0) {
+            [blockSelf.cellTextFStrDic setObject:cellTextFStr forKey:cellModel.ParameterCode];
+        }else{
+            [blockSelf.cellTextFStrDic removeObjectForKey:cellModel.ParameterCode];
+        }
+        
+        if (blockSelf.cellTextFStrDic.count == blockSelf.formParamsArr.count) {
+            
+            [blockSelf.commitBtn setBackgroundColor:btnEnableColor];
+            blockSelf.commitBtn.enabled = YES;
+            
+        }else{
+            
+            [blockSelf.commitBtn setBackgroundColor:btnUnenableColor];
+            blockSelf.commitBtn.enabled = NO;
+        }
+        
+    };
+    
+    return cell;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return 50;
+}
+
+
+#pragma mark - 登录提交
+- (IBAction)querySubmitButtonAction:(UIButton *)sender
+{
+    [self.view endEditing:YES];
+    
+    if ([NSString checkStringEmpty:self.detailModel.CityCode] || [NSString checkStringEmpty:self.tokenValue])
+    {
+        [GFBProgressHUD showHUDTipStr:@"数据有误，请退出重新进入"];
+        return;
+    }
+    
+    NSDictionary *params = @{
+                             @"LoginType" : self.fundDetailModel.LoginType,
+                             @"reqType": @"HF",
+                             @"cityCode": self.detailModel.CityCode,
+                             @"token": self.tokenValue};
+    
+    [self.cellTextFStrDic addEntriesFromDictionary:params];
+    
+    [GFBProgressHUD showBlockHUD];
+    
+    __weak typeof(self)blockSelf = self;
+    [[HttpHelper JSONRequestManager] POST:COMMIT_ACCUMULATION_URL parameters:self.cellTextFStrDic success:^(id resultDic, id responseObject, NSInteger code, NSString *errorMsg) {
+        
+        NSInteger status = [responseObject[@"status"] boolValue];
+        if (status == 1)
+        {
+            [GFBProgressHUD dismiss];
+            
+            //存储本地 detailModel.CityCode 值
+            [[NSUserDefaults standardUserDefaults]setObject:blockSelf.detailModel.CityCode forKey:@"CityCode"];
+            [[NSUserDefaults standardUserDefaults]synchronize];
+            
+            //存储本地 detailModel.CityName 值
+            [[NSUserDefaults standardUserDefaults]setObject:blockSelf.detailModel.CityName forKey:@"CityName"];
+            [[NSUserDefaults standardUserDefaults]synchronize];
+            
+            if ([[NSUserDefaults standardUserDefaults] boolForKey:@"TotalAmount"]){
+                //再次查看的时候
+                [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"TotalAmount"];
+                [[NSUserDefaults standardUserDefaults]synchronize];
+            }
+            
+            //转模型
+            NSDictionary *data = responseObject[@"data"];
+            QueryResultModel *model = [QueryResultModel mj_objectWithKeyValues:data];
+            
+            //赋值
+            QueryResultsViewController *QueryResultsVC = [[QueryResultsViewController alloc]init];
+            QueryResultsVC.cityName = _cityLb.text;
+            [blockSelf.navigationController pushViewController:QueryResultsVC animated:YES];
+            QueryResultsVC.queryResultModel = model;
+            [blockSelf clearDataForUI];
+        }
+        else
+        {
+            [GFBProgressHUD showHUDTipStr:responseObject[@"msg"]];
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.6 * NSEC_PER_SEC)), dispatch_get_main_queue(),^{
+                
+                [blockSelf accumulationFundQueryNetworkRequests];
+                [blockSelf.cellTextFStrDic removeObjectForKey:@"token"];
+                [blockSelf.cellTextFStrDic removeObjectForKey:@"reqType"];
+                [blockSelf.cellTextFStrDic removeObjectForKey:@"cityCode"];
+                [blockSelf.cellTextFStrDic removeObjectForKey:@"LoginType"];
+            });
+        }
+        
+    } failure:^(NSURLSessionDataTask *operation, NSError *error) {
+
+        [GFBProgressHUD showNetworkError];
+    }];
+}
+
+// 拿到tokenValue 和 验证码图片 网络请求
+- (void)accumulationFundQueryNetworkRequests
+{
+    
+    NSDictionary *params = @{@"reqType": @"HF",
+                             @"cityCode": self.detailModel.CityCode};
+    
+    __weak typeof(self)blockSelf = self;
+
+    [[HttpHelper JSONRequestManager] POST:AccumulationFund_Init_Token parameters:params success:^(id resultDic, id responseObject, NSInteger code, NSString *errorMsg) {
+        
+        if (code == 1)
+        {
+            NSDictionary *dataDict = responseObject[@"data"];
+            
+            if ([dataDict[@"success"] integerValue] == 1)
+            {
+                blockSelf.tokenValue = [NSString stringWithFormat:@"%@",dataDict[@"tokenValue"]];
+                
+                blockSelf.randomCodeBase64 = [NSString stringWithFormat:@"%@",dataDict[@"randomCodeBase64"]];
+
+                //删除之前的验证码
+                NSArray *tfArr = [self.mainTableView visibleCells];
+                
+                for (AccumulationFundLoginCell *cell in tfArr)
+                {
+                    if ([cell.formParamsModel.ParameterName isEqualToString:@"验证码"]) {
+                        cell.cellContent.text = @"";
+                        [blockSelf.commitBtn setBackgroundColor:btnUnenableColor];
+                        blockSelf.commitBtn.enabled = NO;
+                    }
+                }
+
+                [blockSelf.cellTextFStrDic removeObjectForKey:@"vercode"];
+                [blockSelf.mainTableView reloadData];
+            }
+
+        }
+        else
+        {
+            [GFBProgressHUD showHUDTipStr:errorMsg];
+        }
+        
+    } failure:^(NSURLSessionDataTask *operation, NSError *error) {
+        
+        [GFBProgressHUD showNetworkError];
+    }];
+}
+
+
+#pragma mark - Request
+- (void)initializeCityListRequest
+{
+    [GFBProgressHUD showBlockHUD];
+    
+    NSDictionary *parames = @{@"reqType": @"HF"};
+    
+    __weak typeof(self)blockSelf = self;
+    [[HttpHelper JSONRequestManager] POST:REQEST_CITY parameters:parames success:^(id resultDic, id responseObject, NSInteger code, NSString *errorMsg)
+     {
+         
+         if (code == 1)
+         {
+             [GFBProgressHUD dismiss];
+             
+             [blockSelf.querySectionTitles removeAllObjects];
+             blockSelf.accumulationFundCityModel = [AccumulationFundCityModel mj_objectWithKeyValues:resultDic];
+             //排序
+             [blockSelf sortedCitys];
+            
+             ProvincesChooseViewController *provincesChooseVC = [[ProvincesChooseViewController alloc]init];
+             [blockSelf.navigationController pushViewController:provincesChooseVC animated:YES];
+             provincesChooseVC.accumulationFundCityModel = blockSelf.accumulationFundCityModel;
+             provincesChooseVC.sectionTitles = [blockSelf.querySectionTitles copy];
+         }
+         else
+         {
+             [GFBProgressHUD showHUDTipStr:errorMsg];
+         }
+         
+     } failure:^(NSURLSessionDataTask *operation, NSError *error) {
+         
+         [GFBProgressHUD showNetworkError];
+     }];
+}
+
+#pragma mark - 数据排序
+- (void)sortedCitys
+{
+    NSString *temString;
+    
+    //排序
+    NSMutableArray *oldArray = [NSMutableArray array];
+    
+    for (int i = 0; i < self.accumulationFundCityModel.Result.count; i++)
+    {
+        CityModel *model = self.accumulationFundCityModel.Result[i];
+        [oldArray addObject:model.firstLetter];
+    }
+    
+    //获取排序之后的字符串
+    NSArray *newArray = [oldArray sortedArrayUsingSelector:@selector(compare:)];
+    
+    //排重相同字符串(用于tableview section title)
+    NSArray *temArray = [newArray mutableCopy];
+    NSSet *set = [NSSet setWithArray:temArray];
+    self.querySectionTitles = [[set sortedArrayUsingDescriptors:@[[[NSSortDescriptor alloc] initWithKey:nil ascending:YES]]] mutableCopy];
+    
+    //根据排序后的字符串,比较然后确定index
+    for (int i = 0; i < newArray.count; i++)
+    {
+        NSString *cityName = newArray[i];
+        for (CityModel *city in self.accumulationFundCityModel.Result)
+        {
+            if ([city.firstLetter isEqualToString:cityName])
+            {
+                city.index = i;
+            }
+        }
+    }
+    
+    //根据index排序
+    NSMutableArray *sortedDatas = [NSMutableArray array];
+    
+    for (int i = 0; i < self.accumulationFundCityModel.Result.count; i++)
+    {
+        for (CityModel *city in self.accumulationFundCityModel.Result)
+        {
+            if (city.index == i)
+            {
+                [sortedDatas addObject:city];
+            }
+        }
+    }
+    
+    NSMutableArray *finallyArray = [NSMutableArray array];
+    //相同的首字母放入一个数组中
+    for (int i = 0; i < sortedDatas.count; i++)
+    {
+        //获取首字母
+        CityModel *city = sortedDatas[i];
+        if ([temString isEqualToString:city.firstLetter])
+        {
+            continue;
+        }
+        
+        temString = city.firstLetter;
+        
+        //相同的首字母放入一个数组中
+        NSMutableArray *temArray = [NSMutableArray array];
+        
+        for (CityModel *model in sortedDatas)
+        {
+            if ([model.firstLetter isEqualToString:temString])
+            {
+                [temArray addObject:model];
+            }
+        }
+        [finallyArray addObject:temArray];
+        
+    }
+    
+    //得到排序后的数据
+    self.accumulationFundCityModel.Result = finallyArray;
+}
+
+
+
+@end

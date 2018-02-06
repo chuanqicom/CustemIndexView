@@ -1,0 +1,125 @@
+//
+//  GFBTableViewIndex.m
+//  GFB
+//
+//  Created by bin xie on 2016/11/2.
+//  Copyright © 2016年 Shanghai Aopai Data Technology Co., Ltd. All rights reserved.
+//
+
+#import "GFBTableViewIndex.h"
+#import "GFBIndexView.h"
+
+@interface GFBTableViewIndex()<GFBIndexViewDelegate>
+
+@property (nonatomic, strong) GFBIndexView  *tableViewIndex;
+@property (nonatomic, strong) UILabel       *flotageLabel;
+
+@end
+
+@implementation GFBTableViewIndex
+
+- (id)initWithFrame:(CGRect)frame
+{
+    self = [super initWithFrame:frame];
+    
+    if (self)
+    {
+        // 创建tableView
+        self.tableView = [[UITableView alloc] initWithFrame:self.bounds style:UITableViewStylePlain];
+        self.tableView.showsVerticalScrollIndicator = NO;
+        self.tableView.backgroundColor = COLOR(238, 238, 238, 1);
+        self.tableView.sectionIndexColor = [UIColor clearColor];           //设置系统的索引字体颜色 为了去除系统索引
+        self.tableView.sectionIndexBackgroundColor = [UIColor clearColor]; //设置系统的索引背景颜色
+        [self addSubview:self.tableView];
+        
+        // 加入自定义的索引条
+        self.tableViewIndex = [[GFBIndexView alloc] initWithFrame:(CGRect){frame.size.width-35,0,30,frame.size.height}];
+        [self addSubview:self.tableViewIndex];
+        
+        // 动态的label
+        self.flotageLabel = [[UILabel alloc] initWithFrame:(CGRect){(self.bounds.size.width - 60 ) / 2,(self.bounds.size.height - 60) / 2,60,60}];
+        self.flotageLabel.backgroundColor = [UIColor clearColor];
+        self.flotageLabel.shadowOffset = CGSizeMake(3, 1.5);
+        self.flotageLabel.shadowColor = [UIColor lightGrayColor];
+        self.flotageLabel.hidden = YES;
+        self.flotageLabel.font = [UIFont systemFontOfSize:50];
+        self.flotageLabel.textAlignment = NSTextAlignmentCenter;
+        self.flotageLabel.textColor = [UIColor colorWithRed:176/255.0 green:25/255.0 blue:26/255.0 alpha:1];
+        [self addSubview:self.flotageLabel];
+    }
+    return self;
+}
+
+#pragma mark - 设置代理
+- (void)setTableViewIndexdelegate:(id<GFBIndexViewDelegate>)tableViewIndexdelegate
+{
+    _tableViewIndexdelegate = tableViewIndexdelegate;
+    self.tableView.delegate = tableViewIndexdelegate;
+    self.tableView.dataSource = tableViewIndexdelegate;
+    
+    /*
+     *   自定义索引条属性设置
+     */
+    self.tableViewIndex.indexes = [self.tableViewIndexdelegate sectionIndexTitlesForTableView:self];
+    CGRect rect = self.tableViewIndex.frame;
+    
+    rect.size.height = self.tableViewIndex.indexes.count * 22;          // 高度
+    rect.origin.y = (self.bounds.size.height - rect.size.height) / 2;   // Y坐标
+    self.tableViewIndex.frame = rect;
+//    self.tableViewIndex.backgroundColor = [UIColor colorWithRed:210/255.0 green:210/255.0 blue:210/255.0 alpha:1];
+//    self.tableViewIndex.layer.cornerRadius = 15.f;
+//    self.tableViewIndex.layer.masksToBounds = YES;
+    
+    self.tableViewIndex.tableViewIndexDelegate = self;
+}
+
+#pragma mark - 刷新tableView
+- (void)reloadData
+{
+    [self.tableView reloadData];
+    
+    UIEdgeInsets edgeInsets = self.tableView.contentInset;
+    
+    self.tableViewIndex.indexes = [self.tableViewIndexdelegate sectionIndexTitlesForTableView:self];
+    CGRect rect = self.tableViewIndex.frame;
+    rect.size.height = self.tableViewIndex.indexes.count * 22; // 高度
+    rect.origin.y = (self.bounds.size.height - rect.size.height - edgeInsets.top - edgeInsets.bottom) / 2 + edgeInsets.top + 20; // Y坐标
+    self.tableViewIndex.frame = rect;
+    self.tableViewIndex.tableViewIndexDelegate = self;
+}
+
+
+#pragma mark - 点击对应的index
+- (void)tableViewIndex:(GFBTableViewIndex *)tableViewIndex didSelectSectionAtIndex:(NSInteger)index withTitle:(NSString *)title
+{
+    if ([self.tableView numberOfSections] > index && index > -1)
+    {
+        // for safety, should always be YES
+        [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:index]
+                              atScrollPosition:UITableViewScrollPositionTop
+                                      animated:NO];
+        
+        self.flotageLabel.text = title;
+    }
+}
+
+- (void)tableViewIndexTouchesBegan:(GFBTableViewIndex *)tableViewIndex
+{
+    self.flotageLabel.hidden = NO;
+}
+
+- (void)tableViewIndexTouchesEnd:(GFBTableViewIndex *)tableViewIndex
+{
+    CATransition *animation = [CATransition animation];
+    animation.type = kCATransitionFade;
+    animation.duration = 0.5;
+    [self.flotageLabel.layer addAnimation:animation forKey:nil];
+    self.flotageLabel.hidden = YES;
+}
+
+- (NSArray *)tableViewIndexTitle:(GFBTableViewIndex *)tableViewIndex
+{
+    return [self.tableViewIndexdelegate sectionIndexTitlesForTableView:self];
+}
+
+@end

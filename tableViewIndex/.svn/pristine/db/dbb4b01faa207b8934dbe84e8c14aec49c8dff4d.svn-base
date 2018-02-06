@@ -1,0 +1,174 @@
+
+//
+//  GFBSelectTableView.m
+//  GFB
+//
+//  Created by 维信金科 on 16/11/8.
+//  Copyright © 2016年 Shanghai Aopai Data Technology Co., Ltd. All rights reserved.
+//
+
+#import "GFBSelectView.h"
+
+@interface GFBSelectView () <CAAnimationDelegate>
+@property (nonatomic, strong) CAShapeLayer *successCircleLayer;
+@property (nonatomic, strong) CAShapeLayer *failCircleLayer;
+
+@property (nonatomic, copy) void(^completeBlock)(void);
+@end
+
+
+@implementation GFBSelectView
+
+
+- (instancetype)initWithFrame:(CGRect)frame animationType:(AnimationJudgeType)animationType{
+    if (self = [super initWithFrame:frame]) {
+        self.backgroundColor = [UIColor whiteColor];
+        
+        switch (animationType) {
+            case 0:
+                [self.layer addSublayer:self.successCircleLayer];
+                break;
+            case 1:
+                [self.layer addSublayer:self.failCircleLayer];
+                break;
+                
+            default:
+                break;
+        }
+    }
+    
+    return self;
+}
+
+
+- (void)removeFromSuperview{
+    [_successCircleLayer removeFromSuperlayer];
+    [_failCircleLayer removeFromSuperlayer];
+    [self.layer removeAllAnimations];
+    [super removeFromSuperview];
+}
+
+
+- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+{
+    [self removeFromSuperview];
+}
+
+
+
+#pragma mark - 邦卡动画
+- (void)showSuccessWithanimationDuration:(NSTimeInterval)animationDuration Complete:(void (^)())complete{
+    CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:@"strokeEnd"];
+    animation.fromValue = @0;
+    animation.toValue = @1;
+    animation.duration = animationDuration;
+    animation.delegate = self;
+    
+    [_successCircleLayer addAnimation:animation forKey:@"end"];
+    
+    _completeBlock = complete;
+    
+}
+
+
+- (void)showFailWithanimationDuration:(NSTimeInterval)animationDuration Complete:(void (^)())complete{
+    CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:@"strokeEnd"];
+    animation.fromValue = @0;
+    animation.toValue = @1;
+    animation.duration = animationDuration;
+    animation.delegate = self;
+    
+    [_failCircleLayer addAnimation:animation forKey:@"end"];
+    
+    _completeBlock = complete;
+    
+}
+
+
+#pragma mark - CAAnimationDelegate
+
+- (void)animationDidStop:(CAAnimation *)anim finished:(BOOL)flag
+{
+    if (flag) {
+        if (_completeBlock != nil) {
+            _completeBlock();
+        }
+    }
+    
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [self removeFromSuperview];
+    });
+}
+
+
+#pragma mark - 初始化layer
+
+- (CAShapeLayer *)successCircleLayer
+{
+    if (!_successCircleLayer) {
+        
+        _successCircleLayer = [CAShapeLayer layer];
+        _successCircleLayer.position = self.center;
+        _successCircleLayer.bounds = self.bounds;
+        
+        UIBezierPath *circlePath = [UIBezierPath bezierPathWithOvalInRect:self.bounds];
+        CGFloat w = self.bounds.size.width;
+        CGFloat h = self.bounds.size.height;
+        [circlePath moveToPoint:CGPointMake(w * 0.25, h * 0.5)];
+        [circlePath addLineToPoint:CGPointMake(w * 0.5, h *0.75)];
+        [circlePath addLineToPoint:CGPointMake(w * 0.75, h *0.25)];
+        
+        _successCircleLayer.path = circlePath.CGPath;
+        _successCircleLayer.fillColor = [UIColor clearColor].CGColor;
+        _successCircleLayer.strokeColor = [UIColor greenColor].CGColor;
+        _successCircleLayer.lineWidth = 3.0;
+        _successCircleLayer.strokeStart = 0;
+        _successCircleLayer.strokeEnd = 1;
+        
+    }
+    
+    return _successCircleLayer;
+}
+
+- (CAShapeLayer *)failCircleLayer
+{
+    if (!_failCircleLayer) {
+        
+        _failCircleLayer = [CAShapeLayer layer];
+        _failCircleLayer.position = self.center;
+        _failCircleLayer.bounds = self.bounds;
+        
+        UIBezierPath *circlePath = [UIBezierPath bezierPathWithOvalInRect:self.bounds];
+        
+        CGFloat w = self.bounds.size.width;
+        CGFloat h = self.bounds.size.height;
+        
+        [circlePath moveToPoint:CGPointMake(w * 0.25, h * 0.25)];
+        [circlePath addLineToPoint:CGPointMake(w * 0.75, h *0.75)];
+        [circlePath moveToPoint:CGPointMake(w * 0.75, h * 0.25)];
+        [circlePath addLineToPoint:CGPointMake(w * 0.25, h *0.75)];
+        
+        _failCircleLayer.path = circlePath.CGPath;
+        _failCircleLayer.fillColor = [UIColor clearColor].CGColor;
+        _failCircleLayer.strokeColor = [UIColor greenColor].CGColor;
+        _failCircleLayer.lineWidth = 3.0;
+        _failCircleLayer.strokeStart = 0;
+        _failCircleLayer.strokeEnd = 1;
+        
+    }
+    
+    return _failCircleLayer;
+}
+
+
+- (void)dealloc
+{
+    
+}
+
+
+@end
+
+
+
+

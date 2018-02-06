@@ -1,0 +1,66 @@
+//
+//  GuidePageVC.m
+//  AJPAPP
+//
+//  Created by xiebin on 16/8/31.
+//  Copyright © 2016年 xiebin. All rights reserved.
+//
+
+#import "GuidePageVC.h" 
+#import "RootViewController.h"
+
+@interface GuidePageVC ()<UIScrollViewDelegate>
+
+@property (weak, nonatomic) IBOutlet UIScrollView  *imgScrollView;
+@property (weak, nonatomic) IBOutlet UIPageControl *imgPageControl;
+@property (weak, nonatomic) IBOutlet UIButton      *jumpBtn;
+
+@end
+
+@implementation GuidePageVC
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    self.imgScrollView.delegate = self;
+    
+    self.jumpBtn.layer.cornerRadius = 20;
+    self.jumpBtn.layer.masksToBounds = YES;
+    self.jumpBtn.layer.borderWidth = 1;
+    self.jumpBtn.layer.borderColor = MAIN_COLOR.CGColor;
+}
+
+- (IBAction)goViewControllerClick:(UIButton *)sender
+{
+    RootViewController *rootVc = [[RootViewController alloc]init];
+    GFBNavigationViewController *nav = [[GFBNavigationViewController alloc]initWithRootViewController:rootVc];
+    [UIApplication sharedApplication].keyWindow.rootViewController=nav;
+}
+
+// 设置图片拖拽时图片下标与pageControl下标对应
+#pragma mark - scroll view delegate
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
+{
+    CGFloat xOffset = scrollView.contentOffset.x;
+    NSInteger index = xOffset / APPWIDTH;
+    self.imgPageControl.currentPage = index;
+}
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView
+{
+    // 根据当前的x坐标和页宽度计算出当前页数
+    NSInteger currentPage = floor((scrollView.contentOffset.x - APPWIDTH / 2) / APPWIDTH) + 1;
+    
+    // 判断当前页为下标 2 时隐藏pageControl
+    if (currentPage == 2)
+    {
+        self.imgPageControl.hidden = YES;
+    }
+    else
+    {
+        self.imgPageControl.hidden = NO;
+    }
+}
+
+
+@end

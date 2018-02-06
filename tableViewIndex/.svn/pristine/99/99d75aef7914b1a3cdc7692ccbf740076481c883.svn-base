@@ -1,0 +1,226 @@
+//
+//  RootViewController.m
+//  CCS
+//
+//  Created by 维信金科 on 16/12/14.
+//  Copyright © 2016年 OrangeCat. All rights reserved.
+//
+
+#import "RootViewController.h"
+#import "ProvincesChooseViewController.h"
+#import "CreditViewController.h"
+#import "SocialSecurityViewController.h"
+
+#import "GFBSelectView.h"
+#import "AccumulationFundCityModel.h"
+#import "CityModel.h"
+
+#define imageH RATIO_H(190)
+
+@interface RootViewController ()
+@property (nonatomic, strong) AccumulationFundCityModel  *accumulationFundCityModel;
+@property (nonatomic, strong) NSMutableArray *querySectionTitles;
+
+@property (nonatomic, strong) UIButton *queryBtn;
+@property (nonatomic, strong) UIButton *socialSecurityBtn;
+@property (nonatomic, strong) UIButton *creditBtn;
+
+@end
+
+@implementation RootViewController
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+
+    CGFloat btnSpace = ((self.view.frame.size.height - TabBarH) - 3*imageH) / 4;
+    
+    UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
+    button.frame = CGRectMake(0, btnSpace, APPWIDTH, imageH);
+    [button setBackgroundImage:[UIImage imageNamed:[NSString stringWithFormat:@"公积金"]] forState:UIControlStateNormal];
+    [button addTarget:self action:@selector(jumpToQueryVc:) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:button];
+    self.queryBtn = button;
+    
+    UIButton *button1 = [UIButton buttonWithType:UIButtonTypeCustom];
+    button1.frame = CGRectMake(0, CGRectGetMaxY(button.frame) + btnSpace, APPWIDTH , imageH);
+    [button1 setBackgroundImage:[UIImage imageNamed:[NSString stringWithFormat:@"社保"]] forState:UIControlStateNormal];
+    [button1 addTarget:self action:@selector(jumpToSocialSecurityVc:) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:button1];
+    self.socialSecurityBtn = button1;
+    
+
+    UIButton *button2 = [UIButton buttonWithType:UIButtonTypeCustom];
+    button2.frame = CGRectMake(0, CGRectGetMaxY(button1.frame) + btnSpace, APPWIDTH, imageH);
+    [button2 setBackgroundImage:[UIImage imageNamed:[NSString stringWithFormat:@"征信"]] forState:UIControlStateNormal];
+   
+    [button2 addTarget:self action:@selector(jumpToCreditVc:) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:button2];
+    self.creditBtn = button2;
+}
+
+#pragma mark - 跳转征信
+
+- (void)jumpToCreditVc:(UIButton *)btn{
+    CreditViewController *creditVc = [[CreditViewController alloc]init];
+    [self presentViewController:creditVc animated:NO completion:nil];
+}
+
+#pragma mark - 跳转公积金
+
+- (void)jumpToQueryVc:(UIButton *)btn{
+    //请求
+    [self initializeCityListRequest];
+}
+
+#pragma mark - 跳转社保
+
+- (void)jumpToSocialSecurityVc:(UIButton *)btn{
+    
+    SocialSecurityViewController *SSVc = [[SocialSecurityViewController alloc]init];
+    [self presentViewController:SSVc animated:NO completion:nil];
+    
+}
+
+
+- (NSString *)navigationTitle
+{
+    return @"牛信用";
+}
+
+
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+
+#pragma mark -------------  网络请求 --------------
+
+// 懒加载实例化数组
+- (NSMutableArray *)querySectionTitles
+{
+    if (!_querySectionTitles)
+    {
+        _querySectionTitles = [NSMutableArray array];
+    }
+    return _querySectionTitles;
+}
+
+#pragma mark - Request
+- (void)initializeCityListRequest
+{
+    [GFBProgressHUD showBlockHUD];
+    
+    NSDictionary *parames = @{@"reqType": @"HF"};
+    
+    __weak typeof(self)blockSelf = self;
+    [[HttpHelper JSONRequestManager] POST:REQEST_CITY parameters:parames success:^(id resultDic, id responseObject, NSInteger code, NSString *errorMsg)
+     {
+         
+         if (code == 1)
+         {
+             [GFBProgressHUD dismiss];
+             
+             [blockSelf.querySectionTitles removeAllObjects];
+             blockSelf.accumulationFundCityModel = [AccumulationFundCityModel mj_objectWithKeyValues:resultDic];
+             //排序
+             [blockSelf sortedCitys];
+             
+             ProvincesChooseViewController *provincesChooseVC = [[ProvincesChooseViewController alloc]init];
+             [blockSelf.navigationController pushViewController:provincesChooseVC animated:YES];
+             provincesChooseVC.accumulationFundCityModel = blockSelf.accumulationFundCityModel;
+             provincesChooseVC.sectionTitles = [blockSelf.querySectionTitles copy];
+         }
+         else
+         {
+             [GFBProgressHUD showHUDTipStr:errorMsg];
+         }
+
+     } failure:^(NSURLSessionDataTask *operation, NSError *error) {
+         
+         [GFBProgressHUD showNetworkError];
+     }];
+    
+}
+
+#pragma mark - 数据排序
+- (void)sortedCitys
+{
+    NSString *temString;
+    
+    //排序
+    NSMutableArray *oldArray = [NSMutableArray array];
+    
+    for (int i = 0; i < self.accumulationFundCityModel.Result.count; i++)
+    {
+        CityModel *model = self.accumulationFundCityModel.Result[i];
+        [oldArray addObject:model.firstLetter];
+    }
+    
+    //获取排序之后的字符串
+    NSArray *newArray = [oldArray sortedArrayUsingSelector:@selector(compare:)];
+    
+    //排重相同字符串(用于tableview section title)
+    NSArray *temArray = [newArray mutableCopy];
+    NSSet *set = [NSSet setWithArray:temArray];
+    self.querySectionTitles = [[set sortedArrayUsingDescriptors:@[[[NSSortDescriptor alloc] initWithKey:nil ascending:YES]]] mutableCopy];
+    
+    //根据排序后的字符串,比较然后确定index
+    for (int i = 0; i < newArray.count; i++)
+    {
+        NSString *cityName = newArray[i];
+        for (CityModel *city in self.accumulationFundCityModel.Result)
+        {
+            if ([city.firstLetter isEqualToString:cityName])
+            {
+                city.index = i;
+            }
+        }
+    }
+    
+    //根据index排序
+    NSMutableArray *sortedDatas = [NSMutableArray array];
+    
+    for (int i = 0; i < self.accumulationFundCityModel.Result.count; i++)
+    {
+        for (CityModel *city in self.accumulationFundCityModel.Result)
+        {
+            if (city.index == i)
+            {
+                [sortedDatas addObject:city];
+            }
+        }
+    }
+    
+    NSMutableArray *finallyArray = [NSMutableArray array];
+    //相同的首字母放入一个数组中
+    for (int i = 0; i < sortedDatas.count; i++)
+    {
+        //获取首字母
+        CityModel *city = sortedDatas[i];
+        if ([temString isEqualToString:city.firstLetter])
+        {
+            continue;
+        }
+        
+        temString = city.firstLetter;
+        
+        //相同的首字母放入一个数组中
+        NSMutableArray *temArray = [NSMutableArray array];
+        
+        for (CityModel *model in sortedDatas)
+        {
+            if ([model.firstLetter isEqualToString:temString])
+            {
+                [temArray addObject:model];
+            }
+        }
+        [finallyArray addObject:temArray];
+        
+    }
+    
+    //得到排序后的数据
+    self.accumulationFundCityModel.Result = finallyArray;
+}
+
+
+@end

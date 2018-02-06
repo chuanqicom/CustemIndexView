@@ -1,0 +1,73 @@
+//
+//  AccumulationFundLoginCell.m
+//  GFB
+//
+//  Created by 维信金科 on 16/9/24.
+//  Copyright © 2016年 Vision Credit  Financial Technology Cpmpany Limited. All rights reserved.
+//
+
+#import "AccumulationFundLoginCell.h"
+
+@interface AccumulationFundLoginCell ()
+
+@end
+
+@implementation AccumulationFundLoginCell
+
+- (void)awakeFromNib
+{
+    [super awakeFromNib];
+    
+    [self.cellContent addTarget:self action:@selector(cellValueDidChanged:) forControlEvents:UIControlEventEditingChanged];
+}
+
+- (void)setSelected:(BOOL)selected animated:(BOOL)animated
+{
+    [super setSelected:selected animated:animated];
+}
+
+
+- (void)cellWithData:(FormParamsModel *)formParamsModel
+{
+    if ([formParamsModel.ParameterName isEqualToString:@"验证码"])
+    {
+        if (![NSString checkStringEmpty:formParamsModel.codeImage64String])
+        {
+            self.codeImageView.hidden = NO;
+            NSData *data = [NSData dataWithBase64String:formParamsModel.codeImage64String];
+            UIImage *image = [UIImage imageWithData:data];
+            self.codeImageView.image = image;
+        }
+    }
+    else
+    {
+        self.codeImageView.hidden = YES;
+    }
+    self.cellTitleLabel.text = formParamsModel.ParameterName;
+    self.cellContent.placeholder = formParamsModel.ParameterMessage;
+    self.formParamsModel = formParamsModel;
+    
+    if ([self.cellTitleLabel.text isEqualToString:@"密码"])
+    {
+        self.cellContent.secureTextEntry = YES;
+    }
+}
+
+
+#pragma mark - 监听
+
+- (void)cellValueDidChanged:(UITextField *)textField
+{
+    if (!self.formParamsModel)
+    {
+        return;
+    }
+    
+    self.formParamsModel.paramsValue = textField.text;
+    
+    if (_callBlock != nil) {
+        self.callBlock(textField.text,self.formParamsModel);
+    }
+}
+
+@end

@@ -1,0 +1,38 @@
+//
+//  FontResizeLabel.m
+//  HM-HEALTH
+//
+//  Created by Alex on 16/3/4.
+//  Copyright © 2016年 PingAn. All rights reserved.
+//
+
+#import "FontResizeLabel.h"
+
+@implementation FontResizeLabel
+
+-(void)setFont:(UIFont *)font
+{
+    [super setFont:[self changeFont:font]];
+}
+
+-(void)awakeFromNib
+{
+    [super awakeFromNib];
+    [super setFont:[self changeFont:self.font]];
+}
+
+- (UIFont*)changeFont:(UIFont*)font
+{
+    UIFont *newFont=nil;
+    if (ISIPHONE5){
+        newFont = [UIFont fontWithName:font.fontName size:font.pointSize - 2];
+    } else if (ISIPHONE6Plus) {
+        newFont = [UIFont fontWithName:font.fontName size:font.pointSize + 1];
+    } else {
+        newFont = font;
+    }
+    return newFont;
+}
+
+
+@end

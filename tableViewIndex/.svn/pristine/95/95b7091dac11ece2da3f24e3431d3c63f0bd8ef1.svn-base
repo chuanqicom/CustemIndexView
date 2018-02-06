@@ -1,0 +1,207 @@
+//
+//  GFBLoadingView.m
+//  GFB
+//
+//  Created by bin xie on 2016/11/21.
+//  Copyright © 2016年 Shanghai Aopai Data Technology Co., Ltd. All rights reserved.
+//
+
+#import "GFBLoadingView.h"
+#import "UIImage+Gif.h"
+
+//遮罩层的大小
+#define MaskSize 120
+//遮罩层的圆角
+#define CornerRadius 10
+//图片大小
+#define ImageSize 50
+
+@implementation GFBLoadingView
+
+/**
+ *  单例
+ */
+
+static  GFBLoadingView  *_loading;
+
++ (instancetype)sharedInstance
+{
+    @synchronized (self)
+    {
+        if (_loading == nil)
+        {
+            _loading = [[self alloc] initWithFrame:CGRectMake(0, 64, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height-64)];
+        }
+    }
+    return _loading;
+}
+
++ (instancetype)allocWithZone:(struct _NSZone *)zone
+{
+    @synchronized (self)
+    {
+        if (_loading == nil)
+        {
+            _loading = [super allocWithZone:zone];
+        }
+    }
+    return _loading;
+}
+
+- (id)copyWithZone:(struct _NSZone *)zone
+{
+    return _loading;
+}
+
++ (void)KKLoadingDealloc
+{
+    _loading = nil;
+}
+
+- (UIImageView *)loadingImageView
+{
+    if (_loadingImageView == nil)
+    {
+        NSString *path = [[NSBundle mainBundle] pathForResource:@"loading" ofType:@"gif"];
+        UIImage *image = [UIImage animatedImageWithAnimatedGIFData:[NSData dataWithContentsOfFile:path]];
+        _loadingImageView = [[UIImageView alloc]init];
+        _loadingImageView.image = image;
+    }
+    return _loadingImageView;
+}
+
+- (UIView *)minMask
+{
+    if (_minMask == nil)
+    {
+        _minMask = [[UIView alloc]init];
+        _minMask.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:.9f];
+        _minMask.layer.cornerRadius = CornerRadius;
+    }
+    return _minMask;
+}
+
+- (UILabel *)loadingLb
+{
+    if (_loadingLb == nil)
+    {
+        _loadingLb = [[UILabel alloc]init];
+        _loadingLb.textColor = [UIColor whiteColor];
+        _loadingLb.font = [UIFont systemFontOfSize:15];
+    }
+    return _loadingLb;
+}
+
+/**
+ *  显示LoadingView
+ */
+
++ (void)show
+{
+    [[self sharedInstance] loadingSetUp];
+}
+
++(void)showErrorLoading
+{
+    [[self sharedInstance] errorLoadingSetUp];
+    
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(),^{
+        
+        [self dismiss];
+    });
+}
+
+- (void)loadingSetUp
+{
+    id<UIApplicationDelegate> delegate = [[UIApplication sharedApplication] delegate];
+    UIWindow *window = [delegate respondsToSelector:@selector(window)] ? [delegate performSelector:@selector(window)] : [[UIApplication sharedApplication] keyWindow];
+    
+    if (self.minMask.superview == nil)
+    {
+        CGFloat screenWidth = [UIScreen mainScreen].bounds.size.width;
+        CGFloat screenHeight = [UIScreen mainScreen].bounds.size.height;
+        self.minMask.frame = CGRectMake((screenWidth - MaskSize)/2.f, (screenHeight - MaskSize-20)/2.f, MaskSize, MaskSize-20);
+        [self addSubview:self.minMask];
+    }
+    
+    if (self.loadingImageView.superview == nil)
+    {
+        self.loadingImageView.frame =  CGRectMake((MaskSize-ImageSize)/2, 10, ImageSize, ImageSize);
+        [self.minMask addSubview:self.loadingImageView];
+    }
+    
+    if (self.loadingLb.superview == nil)
+    {
+        self.loadingLb.frame = CGRectMake(0, 65, 120, 30);
+        self.loadingLb.textAlignment = NSTextAlignmentCenter;
+        self.loadingLb.text = @"加载中...";
+        [self.minMask addSubview:self.loadingLb];
+    }
+    
+    if (self.superview == nil)
+    {
+        self.frame = window.bounds;
+        self.backgroundColor = [UIColor colorWithWhite:0.2 alpha:0.7];
+        [window addSubview:self];
+    }
+}
+
+- (void)errorLoadingSetUp
+{
+    id<UIApplicationDelegate> delegate = [[UIApplication sharedApplication] delegate];
+    UIWindow *window = [delegate respondsToSelector:@selector(window)] ? [delegate performSelector:@selector(window)] : [[UIApplication sharedApplication] keyWindow];
+    
+    if (self.minMask.superview == nil)
+    {
+        CGFloat screenWidth = [UIScreen mainScreen].bounds.size.width;
+        CGFloat screenHeight = [UIScreen mainScreen].bounds.size.height;
+        self.minMask.frame = CGRectMake((screenWidth - 210)/2.f, (screenHeight - 40)/2.f, 210, 40);
+        [self addSubview:self.minMask];
+    }
+    
+    if (self.loadingImageView.superview == nil)
+    {
+        self.loadingImageView.frame =  CGRectMake(15, 5, 30, 30);
+        [self.minMask addSubview:self.loadingImageView];
+    }
+    
+    if (self.loadingLb.superview == nil)
+    {
+        self.loadingLb.frame = CGRectMake(55, 0, 150, 40);
+        self.loadingLb.textAlignment = NSTextAlignmentLeft;
+        self.loadingLb.text = @"网络异常，请稍后...";
+        [self.minMask addSubview:self.loadingLb];
+    }
+    
+    if (self.superview == nil)
+    {
+        self.frame = window.bounds;
+        self.backgroundColor = [UIColor colorWithWhite:0.2 alpha:0.7];
+        [window addSubview:self];
+    }
+}
+
+/**
+ *  隐藏LoadingView
+ */
+
++ (void)dismiss
+{
+    [[self sharedInstance] loadingHide];
+}
+
+- (void)loadingHide
+{
+    [self.loadingImageView removeFromSuperview];
+    
+    [self.minMask removeFromSuperview];
+    
+    [self.loadingLb removeFromSuperview];
+    
+    [self removeFromSuperview];
+}
+
+
+
+
+@end

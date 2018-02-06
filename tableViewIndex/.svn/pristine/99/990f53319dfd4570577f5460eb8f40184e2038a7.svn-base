@@ -1,0 +1,35 @@
+//
+//  GFBLoadingView.h
+//  GFB
+//
+//  Created by bin xie on 2016/11/21.
+//  Copyright © 2016年 Shanghai Aopai Data Technology Co., Ltd. All rights reserved.
+//
+
+#import <UIKit/UIKit.h>
+
+@interface GFBLoadingView : UIView
+
+//小遮罩
+@property (nonatomic, strong) UIView       *minMask;
+//loading
+@property (nonatomic, strong) UIImageView  *loadingImageView;
+//提示语
+@property (nonatomic, strong) UILabel      *loadingLb;
+
+/**
+ *  显示加载Loading
+ */
++ (void)show;
+
+/**
+ *  显示网络异常Loading
+ */
++ (void)showErrorLoading;
+
+/**
+ *  隐藏加载Loading
+ */
++ (void)dismiss;
+
+@end

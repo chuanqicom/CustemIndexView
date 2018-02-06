@@ -1,0 +1,36 @@
+//
+//  ImageUtils.h
+//  GFB
+//
+//  Created by 维信金科 on 16/9/22.
+//  Copyright © 2016年 Vision Credit  Financial Technology Cpmpany Limited. All rights reserved.
+//
+
+#import <UIKit/UIKit.h>
+#import <Accelerate/Accelerate.h>
+
+@interface ImageUtils : NSObject
+
+
+
++ (NSString *)base64Encoding:(NSData *)data;
+
+/*!
+ *
+ *  压缩图片至目标尺寸
+ *
+ *  @param sourceImage 源图片
+ *  @param targetWidth 图片最终尺寸的宽
+ *
+ *  @return 返回按照源图片的宽、高比例压缩至目标宽、高的图片
+ */
++ (UIImage *)compressImage:(UIImage *)sourceImage toTargetWidth:(CGFloat)targetWidth;
+
+//高斯模糊
++(UIImage *)coreBlurImage:(UIImage *)image
+           withBlurNumber:(CGFloat)blur;
+
+
+- (UIImage *)scaleToSize:(UIImage *)img size:(CGSize)size;
+
+@end

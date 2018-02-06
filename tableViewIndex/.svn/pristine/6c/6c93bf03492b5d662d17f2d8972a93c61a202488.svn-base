@@ -1,0 +1,31 @@
+//
+//  CityModel.m
+//  GFB
+//
+//  Created by 维信金科 on 16/9/24.
+//  Copyright © 2016年 Vision Credit  Financial Technology Cpmpany Limited. All rights reserved.
+//
+
+#import "CityModel.h"
+
+@implementation CityModel
+
++ (NSDictionary *)objectClassInArray
+{
+    return @{@"CityLevel" : @"CityDetailModel"};
+}
+
+- (NSString *)firstLetter
+{
+    NSString *newStr = @"";
+    
+    if (![NSString checkStringEmpty:self.ProvinceCode])
+    {
+        NSString *tempString = [self.ProvinceCode substringToIndex:1];
+        newStr = [tempString uppercaseString];
+    }
+    
+    return newStr;
+}
+
+@end

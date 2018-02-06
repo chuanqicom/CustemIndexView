@@ -1,0 +1,61 @@
+//
+//  UIButton+GFBAnyRoundBtn.m
+//  GFB
+//
+//  Created by 维信金科 on 16/10/31.
+//  Copyright © 2016年 Shanghai Aopai Data Technology Co., Ltd. All rights reserved.
+//
+
+#import "UIButton+GFBAnyRoundBtn.h"
+
+@implementation UIButton (GFBAnyRoundBtn)
+
+- (void)roundSide:(BtnRoundSide)side withSize:(CGSize)size
+{
+    UIBezierPath *maskPath;
+    
+    if (side == BtnRoundSideLeft)
+        maskPath = [UIBezierPath bezierPathWithRoundedRect:self.bounds
+                                         byRoundingCorners:(UIRectCornerTopLeft|UIRectCornerBottomLeft)
+                                               cornerRadii:size];
+    else if (side == BtnRoundSideRight)
+        maskPath = [UIBezierPath bezierPathWithRoundedRect:self.bounds
+                                         byRoundingCorners:(UIRectCornerTopRight|UIRectCornerBottomRight)
+                                               cornerRadii:size];
+    else if (side == BtnRoundSideTop)
+        maskPath = [UIBezierPath bezierPathWithRoundedRect:self.bounds
+                                         byRoundingCorners:(UIRectCornerTopLeft|UIRectCornerTopRight)
+                                               cornerRadii:size];
+    else if(side == BtnRoundSideBottom)
+        maskPath = [UIBezierPath bezierPathWithRoundedRect:self.bounds
+                                         byRoundingCorners:(UIRectCornerBottomLeft|UIRectCornerBottomRight)
+                                               cornerRadii:size];
+    
+    else if (side == BtnRoundSideTop_Left)
+        maskPath = [UIBezierPath bezierPathWithRoundedRect:self.bounds byRoundingCorners:UIRectCornerTopLeft cornerRadii:size];
+    
+    else if (side == BtnRoundSideTop_Right)
+        maskPath = [UIBezierPath bezierPathWithRoundedRect:self.bounds byRoundingCorners:UIRectCornerTopRight cornerRadii:size];
+    
+    else if (side == BtnRoundSideBottom_Left)
+        maskPath = [UIBezierPath bezierPathWithRoundedRect:self.bounds byRoundingCorners:UIRectCornerBottomLeft cornerRadii:size];
+    
+    else if (side == BtnRoundSideBottom_Right)
+        maskPath = [UIBezierPath bezierPathWithRoundedRect:self.bounds byRoundingCorners:UIRectCornerBottomRight cornerRadii:size];
+    
+    
+    else maskPath = [UIBezierPath bezierPathWithRoundedRect:self.bounds byRoundingCorners:UIRectCornerAllCorners cornerRadii:size];
+    
+    
+    
+    CAShapeLayer *maskLayer = [CAShapeLayer layer];
+    maskLayer.frame = self.bounds;
+    maskLayer.path = maskPath.CGPath;
+    
+    
+    self.layer.mask = maskLayer;
+    
+    [self.layer setMasksToBounds:YES];
+}
+
+@end

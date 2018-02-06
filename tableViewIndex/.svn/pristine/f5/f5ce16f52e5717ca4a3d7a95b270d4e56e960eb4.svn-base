@@ -1,0 +1,13 @@
+//
+//  AgreementViewController.h
+//  GFB
+//
+//  Created by xiebin on 16/9/28.
+//  Copyright © 2016年 Vision Credit  Financial Technology Cpmpany Limited. All rights reserved.
+//
+
+#import "GFBBaseViewController.h"
+
+@interface AgreementViewController : GFBBaseViewController
+
+@end

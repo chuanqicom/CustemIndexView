@@ -1,0 +1,23 @@
+//
+//  AccumulationFundCityModel.h
+//  GFB
+//
+//  Created by 维信金科 on 16/9/24.
+//  Copyright © 2016年 Vision Credit  Financial Technology Cpmpany Limited. All rights reserved.
+//
+
+#import <Foundation/Foundation.h>
+
+@interface AccumulationFundCityModel : NSObject
+
+@property (nonatomic,  copy) NSString  *EndTime;
+@property (nonatomic,  copy) NSString  *StartTime;
+@property (nonatomic,  copy) NSString  *StatusCode;         //0成功  1失败
+@property (nonatomic,  copy) NSString  *StatusDescription;
+@property (nonatomic,  copy) NSString  *Token;
+@property (nonatomic,  copy) NSString  *Website;
+@property (nonatomic,  copy) NSString  *nextProCode;
+@property (nonatomic, strong) NSArray  *Result;             //结果
+
+
+@end

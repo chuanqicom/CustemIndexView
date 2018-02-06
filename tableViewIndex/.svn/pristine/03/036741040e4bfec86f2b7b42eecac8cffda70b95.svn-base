@@ -1,0 +1,77 @@
+//
+//  NSString+Categories.h
+//  GFB
+//
+//  Created by 维信金科 on 16/9/20.
+//  Copyright © 2016年 Vision Credit  Financial Technology Cpmpany Limited. All rights reserved.
+//
+
+#import <Foundation/Foundation.h>
+
+@interface NSString (Categories)
+
+/**
+ *  校验空字符串
+ *
+ *  @param string 需要校验的字符串
+ *
+ *  @return YES/NO
+ */
++ (BOOL)checkStringEmpty:(NSString *)string;
+
+/**
+ *  校验手机号码是否合法
+ *
+ *  @return YES/NO
+ */
+- (BOOL)isMobileNum;
+
+/**
+ *  校验电话号码是否合法
+ *
+ *  @return YES/NO
+ */
+- (BOOL)checkTelPhoneNum;
+
+/**
+ *  校验email地址是否合法
+ *
+ *  @return YES/NO
+ */
+- (BOOL)checkValidateEmail;
+
+/**
+ *  校验密码是否合法
+ *
+ *  @return YES/NO
+ */
+- (BOOL)checkPasswordText;
+
+
+/**
+ *  获取字符长度 (非 string.length)
+ *
+ *  @return 字符个数
+ */
+- (NSInteger)byteLength;
+
+
+
+/** 返回自适应高度的文本 */
+
++ (CGSize)sizeWithString:(NSString *)string font:(CGFloat)font maxWidth:(CGFloat)maxWidth;
+
+/** 返回自适应宽度的文本 */
+
++ (CGSize)sizeWithString:(NSString *)string font:(CGFloat)font maxHeight:(CGFloat)maxHeight;
+
+//字符串格式化 格式如：¥2,000.00
++ (NSString *)formatCardNumberStr1:(NSString *)cardNumStr;
+
+//字符串格式化 格式如： 2,000.00
++ (NSString *)formatCardNumberStr2:(NSString *)cardNumStr;
+
+//字符串格式化 格式如： 2000
++ (NSString *)formatCardNumberStr3:(NSString *)cardNumStra;
+
+@end

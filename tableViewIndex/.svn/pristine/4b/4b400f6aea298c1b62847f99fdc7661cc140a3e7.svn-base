@@ -1,0 +1,103 @@
+//
+//  DataManager.h
+//  GFB
+//
+//  Created by bin xie on 2016/10/30.
+//  Copyright © 2016年 Shanghai Aopai Data Technology Co., Ltd. All rights reserved.
+//
+
+#import <Foundation/Foundation.h>
+
+//* @brief 持久化数据实体
+@interface DataManager : NSObject
+
+///**
+// *  是否登录
+// */
+//@property (nonatomic, assign, getter=isLogin) BOOL loginState;
+/**
+ *  版本号
+ */
+@property (nonatomic, copy) NSString *lastVersion;
+/**
+ *  token  (主要请求参数,  根据它判断是否登录)
+ */
+@property (nonatomic, copy) NSString *token;
+/**
+ *  APPId
+ */
+@property (nonatomic, copy) NSString *appId;
+/**
+ *  图片路径
+ */
+@property (nonatomic, copy) NSString *imagePath;
+
+
+#pragma mark - 首页获取的持久化数据
+
+/**
+ *  客户号
+ */
+@property (nonatomic, strong) NSNumber *customerId;
+/**
+ *  首页状态 page值
+ */
+@property (nonatomic, copy) NSString *page;
+/**
+ *  身份证号
+ */
+@property (nonatomic, copy) NSString *identityNo;
+/**
+ *  身份证有效期
+ */
+@property (nonatomic, copy) NSString *identityExpires;
+/**
+ *  真实姓名
+ */
+@property (nonatomic, copy) NSString *realName;
+/**
+ *  手机号
+ */
+@property (nonatomic, copy) NSString *mobile;
+/**
+ *  学历
+ */
+@property (nonatomic, copy) NSString *educationDegree;
+/**
+ *  婚姻状况
+ */
+@property (nonatomic, copy) NSString *marryStatus;
+
+/**
+ *  是否上传过手持身份证
+ */
+@property (nonatomic, copy) NSString *identityPerson;
+/**
+ *  身份证地址
+ */
+@property (nonatomic, copy) NSString *address;
+
+
+//推送消息未读数
+@property (nonatomic, copy) NSString *noReadCount;
+
+
+#pragma mark - 自定义变量(程序启动重置)
+
+//正在展示Loginviewcontroller
+@property (nonatomic, assign) BOOL isShowLoginVC;
+
+//首页 ---  需要重新请求数据
+@property (nonatomic, assign) BOOL homeNeedRequestData;
+
+
+
++ (DataManager *)shareManager;
+
+
+//重置Datamanager
++ (void)resetDataManager;
+
+
+
+@end

@@ -1,0 +1,24 @@
+//
+//  AccumulationFundSettingResult.h
+//  GFB
+//
+//  Created by 维信金科 on 16/9/24.
+//  Copyright © 2016年 Vision Credit  Financial Technology Cpmpany Limited. All rights reserved.
+//
+
+#import <Foundation/Foundation.h>
+
+@interface AccumulationFundSettingResult : NSObject
+
+@property (nonatomic, copy) NSString *CityCode;
+@property (nonatomic, copy) NSString *CityName;
+@property (nonatomic, copy) NSString *Description;
+@property (nonatomic, copy) NSString *IsUse;
+
+@property (nonatomic, strong) NSArray *FormSettings;  //(AccumulationFundDetail)
+
+
+@property (nonatomic, copy) NSString *rid;
+
+@end
+

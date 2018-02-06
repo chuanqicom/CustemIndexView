@@ -1,0 +1,55 @@
+//
+//  GFBNavigationViewController.m
+//  GFB
+//
+//  Created by bin xie on 2016/10/30.
+//  Copyright © 2016年 Shanghai Aopai Data Technology Co., Ltd. All rights reserved.
+//
+
+#import "GFBNavigationViewController.h"
+#import "AppDelegate.h"
+
+@interface GFBNavigationViewController ()<UIGestureRecognizerDelegate,UINavigationControllerDelegate>
+
+@end
+
+@implementation GFBNavigationViewController
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    self.view.backgroundColor = [UIColor clearColor];
+    self.delegate = self;
+    self.interactivePopGestureRecognizer.delegate = self;
+}
+
+- (void)pushViewController:(UIViewController *)viewController animated:(BOOL)animated
+{
+    [super pushViewController:viewController animated:animated];
+    
+    //这个方法是在当前控制器执行push的时候，禁止手势右划返回，避免出现crash的现象，（也可以不实现好像也没什么影响）
+    if ([self respondsToSelector:@selector(interactivePopGestureRecognizer)])
+    {
+        self.interactivePopGestureRecognizer.enabled = NO;
+    }
+    //判断上一个控制器和现在的控制器是不是同一个，如果是，返回。如果不是push到当前控制器，这就有效避免了同一个控制器连续push的问题
+    if ([self.topViewController isMemberOfClass:[viewController class]])
+    {
+        return;
+    }
+}
+
+- (void)navigationController:(UINavigationController *)navigationController
+       didShowViewController:(UIViewController *)viewController
+                    animated:(BOOL)animate
+{
+    if ([self respondsToSelector:@selector(interactivePopGestureRecognizer)])
+    {
+        self.interactivePopGestureRecognizer.enabled = NO;
+    }
+}
+
+
+
+
+@end

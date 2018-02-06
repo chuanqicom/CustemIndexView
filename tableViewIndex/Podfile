@@ -1,0 +1,11 @@
+platform :ios, ‘8.0’
+
+target “CCS” do
+
+pod 'AFNetworking'
+pod 'MJExtension'
+pod 'HexColors'
+pod 'Masonry'
+pod 'SVProgressHUD'
+
+end

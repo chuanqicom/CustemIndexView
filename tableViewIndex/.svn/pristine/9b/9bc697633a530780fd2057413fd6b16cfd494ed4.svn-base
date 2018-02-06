@@ -1,0 +1,64 @@
+//
+//  SocialSecurityViewController.m
+//  CCS
+//
+//  Created by 维信金科 on 17/1/3.
+//  Copyright © 2017年 OrangeCat. All rights reserved.
+//
+
+#import "SocialSecurityViewController.h"
+#import <JavaScriptCore/JavaScriptCore.h>
+
+@interface SocialSecurityViewController ()<UIWebViewDelegate>
+@property (nonatomic, strong) UIWebView *web;
+
+@end
+
+@implementation SocialSecurityViewController
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    [GFBProgressHUD showBlockHUD];
+    self.web = [[UIWebView alloc]initWithFrame:self.view.frame];
+    [self.view addSubview:_web];
+    self.web.delegate = self;
+    NSString *H5URLStr = [NSString stringWithFormat:@"%@%@",BaseURL,SECURITYGUIDE];
+    [_web loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:H5URLStr]]];
+}
+
+- (void)webViewDidFinishLoad:(UIWebView *)webView{
+    
+    [GFBProgressHUD dismiss];
+    __weak typeof(self)blockSelf = self;
+    JSContext *context = [self.web valueForKeyPath:@"documentView.webView.mainFrame.javaScriptContext"];
+    context[@"goBackHome"] = ^() {
+        
+        [blockSelf goToHomePageViewController];
+    };
+    
+}
+
+
+#pragma mark - 返回首页
+- (void)goToHomePageViewController
+{
+    [self dismissViewControllerAnimated:NO completion:nil];
+}
+
+
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+
+/*
+#pragma mark - Navigation
+
+// In a storyboard-based application, you will often want to do a little preparation before navigation
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+    // Get the new view controller using [segue destinationViewController].
+    // Pass the selected object to the new view controller.
+}
+*/
+
+@end

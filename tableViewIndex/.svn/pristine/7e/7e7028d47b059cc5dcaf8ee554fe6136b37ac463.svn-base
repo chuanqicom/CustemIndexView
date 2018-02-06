@@ -1,0 +1,336 @@
+//
+//  QueryResultsViewController.m
+//  GFB
+//
+//  Created by xiebin on 16/9/23.
+//  Copyright © 2016年 Vision Credit  Financial Technology Cpmpany Limited. All rights reserved.
+//
+
+#import "QueryResultsViewController.h"
+#import "MButton.h"
+#import "ProvidentFundLoginViewController.h"
+#import "AccumulationFundSettingModel.h"
+#import "AccumulationFundDetail.h"
+#import "CityDetailModel.h"
+
+@interface QueryResultsViewController ()
+
+@property (weak,  nonatomic) IBOutlet UIView *bgView;
+@property (strong,nonatomic) UIView          *popUpView;
+@property (weak, nonatomic) IBOutlet MButton *queryBtn;
+@property (nonatomic, strong) AccumulationFundSettingModel   *settingModel;
+@property (nonatomic, strong) AccumulationFundDetail         *fundDetailModel;
+@property (nonatomic, strong) NSArray                        *formParamsModels;
+
+@property (nonatomic, copy) NSString *token;
+@property (nonatomic, copy) NSString *codeBase64;
+
+@end
+
+@implementation QueryResultsViewController
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    [self.view setBackgroundColor:COLOR(238, 238, 238, 1)];
+    
+    self.bgView.layer.cornerRadius = 10.f;
+    self.bgView.layer.masksToBounds = YES;
+    
+    //配置数据
+    [self configData];
+}
+
+- (NSString *)navigationTitle
+{
+    return @"查询结果";
+}
+
+#pragma mark - navigationBar 左边返回按钮点击事件
+- (void)navLeftButtonAction
+{
+    [self.navigationController popToRootViewControllerAnimated:YES];
+}
+
+//配置数据
+- (void)configData
+{
+    if (![[NSUserDefaults standardUserDefaults] boolForKey:@"TotalAmount"])
+    {
+        self.cityNameLb.text = _cityName;
+        [[NSUserDefaults standardUserDefaults] setObject:_cityName forKey:@"CityName"];
+        
+        NSString *time = [NSString stringWithFormat:@"%@",self.queryResultModel.queryTime];
+        NSDateFormatter * formatter = [[NSDateFormatter alloc]init];
+        [formatter setDateFormat:@"yyyy-MM-dd"];
+        NSDate * date = [formatter dateFromString:time];
+        [formatter setDateFormat:@"yyyy.MM.dd"];
+        NSString *timeStr = [formatter stringFromDate:date];
+
+        self.timeLabel.text = [NSString stringWithFormat:@"查询时间：%@", timeStr];
+        [[NSUserDefaults standardUserDefaults] setObject:timeStr forKey:@"QueryTime"];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+        
+        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"TotalAmount"];
+        self.tipLabel.text = @"已获取";
+        self.monthAmount.text = [NSString stringWithFormat:@"%.2f", self.queryResultModel.monthAmount];
+        self.totalAmount.text = [NSString stringWithFormat:@"%.2f", self.queryResultModel.totalAmount];
+    }
+    else
+    {
+        NSString *cityName = [[NSUserDefaults standardUserDefaults] objectForKey:@"CityName"];
+        self.cityNameLb.text = cityName;
+        
+        NSString *queryTime = [[NSUserDefaults standardUserDefaults] objectForKey:@"QueryTime"];
+        self.timeLabel.text = [NSString stringWithFormat:@"查询时间：%@", queryTime];
+        
+        self.tipLabel.text = @"为了您的信息安全，敏感信息已隐藏";
+        self.monthAmount.text = [NSString stringWithFormat:@"* * *"];
+        self.totalAmount.text = [NSString stringWithFormat:@"* * *"];
+        
+        [self.queryBtn setTitle:@"再次查看" forState:UIControlStateNormal];
+    }
+}
+
+
+- (IBAction)providenFundInformationAgainButtonAction:(UIButton *)sender
+{
+    
+    //获取存储本地 detailModel.CityCode 值
+    NSString *cityCode = [[NSUserDefaults standardUserDefaults]objectForKey:@"CityCode"];
+    [[NSUserDefaults standardUserDefaults]synchronize];
+    
+    NSString *cityName = [[NSUserDefaults standardUserDefaults]objectForKey:@"CityName"];
+    [[NSUserDefaults standardUserDefaults]synchronize];
+
+    if (cityCode.length != 0) {
+        
+        NSUInteger count = self.navigationController.childViewControllers.count;
+            
+        if (count > 3) {
+            [self.navigationController popViewControllerAnimated:YES];
+        }
+        else
+        {
+            // 再次查看 / 查看最新公积金
+            CityDetailModel *model = [[CityDetailModel alloc]init];
+            model.CityCode = cityCode;
+            cityName = [cityName substringToIndex:cityName.length - 3];
+            model.CityName = cityName;
+            [self accumulationFundQueryNetworkRequestsWithCityCode:model];
+        }
+    }
+
+}
+
+
+
+- (IBAction)deleteRecordButtonAction:(UIButton *)sender
+{
+    [UIView animateWithDuration:0.5 animations:^{
+        self.popUpView = [[UIView alloc]initWithFrame:self.view.bounds];
+        self.popUpView.backgroundColor = COLOR(153, 153, 153, 0.6);
+        [self.view addSubview:self.popUpView];
+        
+        UIView *popView = [[UIView alloc]init];
+        popView.backgroundColor = [UIColor whiteColor];
+        popView.layer.cornerRadius = 10.f;
+        popView.layer.masksToBounds = YES;
+        [self.popUpView addSubview:popView];
+        [popView mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.center.equalTo(self.popUpView);
+            make.size.mas_equalTo(CGSizeMake(255, 300));
+        }];
+        
+        UIImage *image = [UIImage imageNamed:@"Paper-shredder"];
+        UIImageView *topImageView = [[UIImageView alloc]init];
+        topImageView.image = image;
+        [popView addSubview:topImageView];
+        [topImageView mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.centerX.mas_equalTo(popView);
+            make.top.equalTo(popView.mas_top).offset(30);
+            make.size.mas_equalTo(CGSizeMake(image.size.width, image.size.height));
+        }];
+        
+        UILabel *promptLb = [[UILabel alloc]init];
+        [popView addSubview:promptLb];
+        promptLb.text = @"删除记录";
+        promptLb.textColor = MAIN_COLOR;
+        promptLb.textAlignment = NSTextAlignmentCenter;
+        promptLb.font = [UIFont systemFontOfSize:16];
+        [promptLb mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.centerX.mas_equalTo(popView);
+            make.top.equalTo(topImageView.mas_bottom).offset(20);
+        }];
+        
+        UILabel *msgLb = [[UILabel alloc]init];
+        [popView addSubview:msgLb];
+        msgLb.text = @"删除后将不保留您的信息\n确定删除？";
+        msgLb.numberOfLines = 0;
+        msgLb.textColor = COLOR(102, 102, 102, 1);
+        msgLb.textAlignment = NSTextAlignmentCenter;
+        msgLb.font = [UIFont systemFontOfSize:16];
+        [msgLb mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.centerX.mas_equalTo(popView);
+            make.top.equalTo(promptLb.mas_bottom).offset(15);
+        }];
+        
+        
+        UIView *lineView1 = [[UIView alloc]init];
+        lineView1.backgroundColor = COLOR(236, 236, 236, 1);
+        [popView addSubview:lineView1];
+        [lineView1 mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.centerX.mas_equalTo(popView);
+            make.top.equalTo(popView.mas_bottom).offset(-50);
+            make.size.mas_equalTo(CGSizeMake(241, 1));
+        }];
+        
+        UIView *lineView2 = [[UIView alloc]init];
+        lineView2.backgroundColor = COLOR(236, 236, 236, 1);
+        [popView addSubview:lineView2];
+        [lineView2 mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.centerX.mas_equalTo(popView);
+            make.top.equalTo(lineView1.mas_bottom).offset(10);
+            make.size.mas_equalTo(CGSizeMake(1, 30));
+        }];
+        
+        NSArray *textArr = @[@"确定",@"取消"];
+        for (NSInteger i = 0; i < textArr.count; i++)
+        {
+            UIButton *btn = [[UIButton alloc]initWithFrame:CGRectMake(i*127.5, 251, 127.5, 49)];
+            [btn setTitle:textArr[i] forState:UIControlStateNormal];
+            btn.titleLabel.font = [UIFont systemFontOfSize:15];
+            btn.tag = 100+i;
+            
+            if (i == 0)
+            {
+                [btn setTitleColor:MAIN_COLOR forState:UIControlStateNormal];
+            }
+            else
+            {
+                [btn setTitleColor:COLOR(190, 190, 190, 1) forState:UIControlStateNormal];
+            }
+            
+            [popView addSubview:btn];
+            [btn addTarget:self action:@selector(promptedButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+        }
+    }];
+
+}
+
+
+- (void)promptedButtonAction:(UIButton *)button
+{
+    switch (button.tag)
+    {
+        case 100:
+        {
+            [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"TotalAmount"];
+            [[NSUserDefaults standardUserDefaults]removeObjectForKey:@"CityCode"];
+            [[NSUserDefaults standardUserDefaults]removeObjectForKey:@"CityName"];
+            [[NSUserDefaults standardUserDefaults]synchronize];
+            
+            [self.navigationController popToRootViewControllerAnimated:YES];
+
+            [self.popUpView removeFromSuperview];
+        }
+            break;
+            
+        case 101:
+        {
+            [self.popUpView removeFromSuperview];
+        }
+            break;
+    }
+}
+
+
+- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+{
+    [self.popUpView removeFromSuperview];
+}
+
+
+
+
+// 判断点击的cell的城市是否可以查询 网络请求
+- (void)checkWhetherSupportQueryNetworkRequestsWithCityCode:(CityDetailModel *)model
+{
+    NSDictionary *params = @{@"reqType": @"HF",
+                             @"cityCode": model.CityCode};
+    
+    [[HttpHelper JSONRequestManager] POST:AccumulationFund_SETTING parameters:params success:^(id resultDic, id responseObject, NSInteger code, NSString *errorMsg) {
+        
+        if (code == 1)
+        {
+            self.settingModel = [AccumulationFundSettingModel mj_objectWithKeyValues:resultDic];
+            
+            self.fundDetailModel = self.settingModel.Result.FormSettings.firstObject;
+            
+            self.formParamsModels = self.fundDetailModel.FormParams;
+            // 不支持的城市弱提示
+            if (self.fundDetailModel.FormParams == nil)
+            {
+                [GFBProgressHUD showHUDTipStr:@"暂不支持此城市公积金查询"];
+                return;
+            }
+            
+            [GFBProgressHUD dismiss];
+
+            ProvidentFundLoginViewController *ProvidentFundLoginVC = [[ProvidentFundLoginViewController alloc] init];
+            ProvidentFundLoginVC.detailModel = model;
+            ProvidentFundLoginVC.fundDetailModel = self.fundDetailModel;
+            ProvidentFundLoginVC.tokenValue = self.token;
+            ProvidentFundLoginVC.randomCodeBase64 = self.codeBase64;
+            [self.navigationController pushViewController:ProvidentFundLoginVC animated:YES];
+        }
+        else
+        {
+            [GFBProgressHUD showHUDTipStr:errorMsg];
+            return;
+        }
+        
+    } failure:^(NSURLSessionDataTask *operation, NSError *error) {
+        
+        [GFBProgressHUD showNetworkError];
+    }];
+    
+}
+
+// 拿到tokenValue 和 验证码图片 网络请求
+- (void)accumulationFundQueryNetworkRequestsWithCityCode:(CityDetailModel *)model
+{
+    [GFBProgressHUD showBlockHUD];
+    
+    NSDictionary *params = @{@"reqType": @"HF",
+                             @"cityCode": model.CityCode};
+    
+    [[HttpHelper JSONRequestManager] POST:AccumulationFund_Init_Token parameters:params success:^(id resultDic, id responseObject, NSInteger code, NSString *errorMsg) {
+        
+        if (code == 1)
+        {
+            NSDictionary *dataDict = responseObject[@"data"];
+            
+            if ([dataDict[@"success"] integerValue] == 1)
+            {
+                self.token = [NSString stringWithFormat:@"%@",dataDict[@"tokenValue"]];
+                self.codeBase64 = [NSString stringWithFormat:@"%@",dataDict[@"randomCodeBase64"]];
+                
+                [self checkWhetherSupportQueryNetworkRequestsWithCityCode:model];
+            }
+        }
+        else
+        {
+            [GFBProgressHUD showHUDTipStr:@"暂不支持此城市公积金查询"];
+            return;
+        }
+        
+    } failure:^(NSURLSessionDataTask *operation, NSError *error) {
+        
+        [GFBProgressHUD showNetworkError];
+    }];
+}
+
+
+
+@end

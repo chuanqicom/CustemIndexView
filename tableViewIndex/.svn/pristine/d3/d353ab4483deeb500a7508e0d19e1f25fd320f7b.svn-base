@@ -1,0 +1,97 @@
+//
+//  GuidePageVC.m
+//  AJPAPP
+//
+//  Created by xiebin on 16/8/31.
+//  Copyright © 2016年 xiebin. All rights reserved.
+//
+
+#import "GuidePageVC.h" 
+#import "RootViewController.h"
+
+@interface GuidePageVC ()<UIScrollViewDelegate>
+
+@property (strong, nonatomic)  UIScrollView  *imgScrollView;
+@property (strong, nonatomic)  UIPageControl *imgPageControl;
+@property (strong, nonatomic)  UIButton      *jumpBtn;
+
+@end
+
+@implementation GuidePageVC
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    CGFloat width = self.view.frame.size.width;
+    CGFloat height = self.view.frame.size.height;
+
+    self.imgScrollView = [[UIScrollView alloc]initWithFrame:self.view.bounds];
+    self.imgScrollView.pagingEnabled = YES;
+    self.imgScrollView.bounces = NO;
+    self.imgScrollView.contentSize = CGSizeMake(4*width, height);
+    self.imgScrollView.delegate = self;
+    [self.view addSubview:_imgScrollView];
+    
+    for (int i= 0; i < 4; i++) {
+        UIImageView *imageV = [[UIImageView alloc]initWithFrame:CGRectMake(i*width, 0, width, height)];
+        imageV.image = [UIImage imageNamed:[NSString stringWithFormat:@"引导页%d",i +1]];
+        
+        [self.imgScrollView addSubview:imageV];
+        
+        if (i == 3) {
+            imageV.userInteractionEnabled = YES;
+            UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(goViewControllerClick:)];
+            [imageV addGestureRecognizer:tap];
+        }
+        
+    }
+    
+    
+    self.imgPageControl = [[UIPageControl alloc]initWithFrame:CGRectMake(0, 0, 100, 20)];
+    _imgPageControl.centerX = self.view.centerX;
+    _imgPageControl.y = height - 100;
+    _imgPageControl.numberOfPages = 4;
+    _imgPageControl.currentPage = 0;
+    _imgPageControl.tintColor = ColorWith(@"AAAAAA");
+    _imgPageControl.currentPageIndicatorTintColor = MAIN_COLOR;
+    [self.view addSubview:_imgPageControl];
+    
+    
+   
+}
+
+- (void)goViewControllerClick:(UIButton *)sender
+{
+    RootViewController *rootVc = [[RootViewController alloc]init];
+    GFBNavigationViewController *nav = [[GFBNavigationViewController alloc]initWithRootViewController:rootVc];
+    [UIApplication sharedApplication].keyWindow.rootViewController=nav;
+}
+
+// 设置图片拖拽时图片下标与pageControl下标对应
+#pragma mark - scroll view delegate
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
+{
+    CGFloat xOffset = scrollView.contentOffset.x;
+    NSInteger index = xOffset / APPWIDTH;
+    self.imgPageControl.currentPage = index;
+}
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView
+{
+    // 根据当前的x坐标和页宽度计算出当前页数
+    NSInteger currentPage = floor((scrollView.contentOffset.x - APPWIDTH / 2) / APPWIDTH) + 1;
+    
+    // 判断当前页为下标 3 时隐藏pageControl
+    if (currentPage == 3)
+    {
+        self.imgPageControl.hidden = YES;
+    }
+    else
+    {
+        self.imgPageControl.hidden = NO;
+    }
+    
+}
+
+
+@end

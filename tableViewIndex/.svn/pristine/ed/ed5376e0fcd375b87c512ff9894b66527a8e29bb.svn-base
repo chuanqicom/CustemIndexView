@@ -1,0 +1,310 @@
+//
+//  GFBRequestApi.h
+//  GFB
+//
+//  Created by bin xie on 2016/10/30.
+//  Copyright © 2016年 Shanghai Aopai Data Technology Co., Ltd. All rights reserved.
+//
+
+
+#import <UIKit/UIKit.h>
+
+/**
+ *  登录
+ */
+extern NSString *const LOGIN;
+
+/**
+ *  用户注册
+ */
+extern NSString *const REGISTER;
+
+/**
+ *  发送验证码
+ */
+extern NSString *const SEND_REGISTER;
+
+/**
+ *  注册合并数据身份验证
+ */
+extern NSString *const IDCHECK_REGISTER;
+
+/**
+ *  登录密码修改
+ */
+extern NSString *const LOGINPASSWORD_CHANGE;
+
+/**
+ *  登录密码重置
+ */
+extern NSString *const LOGINPASSWORD_RESET;
+
+/**
+ *  密码重置身份认证
+ */
+extern NSString *const RESETPASSWORD_VALIDATE;
+
+/**
+ *  获取用户信息
+ */
+extern NSString *const GET_PERSON_INFO;
+
+/**
+ *  我的-图片上传
+ */
+extern NSString *const UPLOAD;
+
+/**
+ *  首页
+ */
+extern NSString *const HOME_PAGE;
+
+/**
+ *  判断是否有手势密码
+ */
+extern NSString *const PASSWORDGESTURES_IF;
+
+/**
+ *  判断手势密码是否正确
+ */
+extern NSString *const PASSWORDGESTURES_IFTRUE;
+
+/**
+ *  设置手势密码
+ */
+extern NSString *const PASSWORDGESTURES_SETTING;
+
+/**
+ *  清空手势密码
+ */
+extern NSString *const PASSWORDGESTURES_EMPTY;
+
+/**
+ *  判断是否有交易密码
+ */
+extern NSString *const TRADEPASSWORD_IFWITHOUT;
+
+/**
+ *  判断交易密码对否
+ */
+extern NSString *const TRADEPASSWORD_RIGHT;
+
+/**
+ *  更改交易密码
+ */
+extern NSString *const TRADEPASSWORD_CHANGE;
+
+/**
+ *  新增交易密码
+ */
+extern NSString *const TRADEPASSWORD_NEWSET;
+
+/**
+ *  忘记交易密码 身份认证
+ */
+extern NSString *const TRADEPASSWORD_CHECKTRANSAUTH;
+
+
+/**
+ *  公积金初始化城市数据接口
+ */
+extern NSString *const REQEST_CITY;
+
+/**
+ *  公积金社保初始化验证码和token
+ */
+extern NSString *const AccumulationFund_Init_Token;
+
+/**
+ *  查询公积金或社保表单设置信息
+ */
+extern NSString *const AccumulationFund_SETTING;
+
+/**
+ *  登录提交公积金__获取公积金信息
+ */
+extern NSString *const COMMIT_ACCUMULATION_URL;
+
+/**
+ *  更换银行卡
+ */
+extern NSString *const BANKCARD_REPLACE;
+
+/**
+ *  银行卡选择列表
+ */
+extern NSString *const BANKCARD_LIST;
+
+/**
+ *  推送
+ */
+
+extern NSString *const PUSH_MESSAGE; 
+
+/**
+ *  推送更新
+ */
+
+extern NSString *const PUSH_MESSAGEUPDATE;  
+
+/**
+ *  推送信息 notifcation name
+ */
+
+extern NSString *const PUSH_NOTIFNAME;
+
+//初始化身份认证基本数据
+extern NSString *const IDENTITYINFO_DOWNLOAD;
+//上传身份认证基本数据
+extern NSString *const SAVEBASIC_INFO;
+
+//手持身份证照 上传接口
+extern NSString *const IDENTITY_UPLOAD;
+
+//身份认证 身份证解析接口
+extern NSString *const IDENTITY_RECOGNIZE;
+//身份认证 身份证照片下载接口
+extern NSString *const IDENTITY_DOWNLOAD;
+
+
+/**
+ *  提现初始化
+ */
+extern NSString *const CASH_INITDATA;
+
+// 判断交易密码是否锁定
+extern NSString *const TRADEPASSWORD_IFLOCK;
+/**
+ *  申请提现的数据保存
+ */
+extern NSString *const CASH_BUILDLOAN;
+
+/**
+ *  查看借款信用认证
+ */
+extern NSString *const VALIDATE_CREDITAUTH;
+
+/**
+ *  查看借款详情
+ */
+extern NSString *const SEARCH_SINGLEWITHDRAWINFO;
+
+/**
+ *  提现 选择分期
+ */
+extern NSString *const CASH_TRIALREPAYMENTINFO;
+/**
+ *  提现 保存合同
+ */
+extern NSString *const AGREEMENT_SAVECONTRACT;
+/**
+ *  重签合同
+ */
+extern NSString *const AGREEMENT_PRELOADLOANCONTRACT;
+/**
+ *  绑定银行卡
+ */
+extern NSString *const BANKCARD_BIND;
+
+
+/**
+ *  手机认证 初始化数据
+ */
+extern NSString *const PHONE_INITIALIZE;
+
+/**
+ *  手机认证 提交信息
+ */
+extern NSString *const PHONE_SUBMITINFORMATION;
+
+/**
+ *  手机认证 比对信息
+ */
+extern NSString *const PHONE_COMPARINGINFORMATION;
+
+/**
+ *  征信认证 初始化数据
+ */
+extern NSString *const CREDIT_INITIALIZE;
+
+/**
+ *  征信认证 征信登录
+ */
+extern NSString *const CREDIT_LOGIN;
+
+/**
+ *  征信注册 第一步
+ */
+extern NSString *const CREDITREGISTER_ONE;
+
+/**
+ *  征信注册 第二步
+ */
+extern NSString *const CREDITREGISTER_TWO;
+
+/**
+ *  征信注册 第三步
+ */
+extern NSString *const CREDITREGISTER_THREE;
+
+/**
+ *   征信登陆 -- 激活码查询征信报告
+ */
+extern NSString *const CREDIT_GETREPORT;
+
+/**
+ *   征信报告银行卡认证
+ */
+// 初始化 获取图片验证码和tokenValue
+extern NSString *const CREDITCARD_INITIALIZE;
+
+// 获取银联标识
+extern NSString *const CREDITCARD_UNIONPAY;
+
+// 获取银行卡信息 判断是借记卡 还是信用卡
+extern NSString *const CREDITCARD_CARDINFO;
+
+// 获取手机验证码
+extern NSString *const CREDITCARD_PHONECODE;
+
+// 提交银行卡认证信息
+extern NSString *const CREDITCARD_BANKCARDINFO;
+
+// 确认提交的银行卡认证信息
+extern NSString *const CREDITCARD_AUTHINFO;
+
+/**
+ *   征信报告问题认证
+ */
+// 获取问题
+extern NSString *const CREDITPROBLEM_GETQUSETUONS;
+
+// 回答问题提交
+extern NSString *const CREDITPROBLEM_SUBMITANSWER;
+
+/**
+ *   征信报告反馈结果状态
+ */
+// 失败锁单天数状态
+extern NSString *const CREDITRESULTS_FAILURE;
+
+//失败再次申请
+extern NSString *const CREDITRESULTS_APPLYAGAIN;
+
+// 审核中状态 刷新
+extern NSString *const CREDITRESULTS_REVIEWING;
+
+/**
+ *   账单
+ */
+// 我的账单
+extern NSString *const BILL_MINE;
+
+// 查看单个借款详情
+extern NSString *const BILL_WITHDRAWALINFO;
+
+// 清贷确认
+extern NSString *const BILL_REPAYCONFIRM;
+
+// 清贷查询
+extern NSString *const BILL_REPAYQUERY;

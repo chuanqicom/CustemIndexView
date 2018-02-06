@@ -1,0 +1,157 @@
+//
+//  HttpHelper.m
+//  testCocoaPods
+//
+//  Created by David on 16/9/21.
+//  Copyright © 2016年 David. All rights reserved.
+//
+#import "HttpHelper.h"
+#import "GFBRSA.h"
+
+#define KPublicKey @"MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDWbO1tolCYTlcIT8QsdjF5AvgcPcVAQ735XIJmmaVU17j29BJbDEFeXkYGfiULr19RcfQi6fB0hn+9IF8ObWYXl8VjCbt1DfDc5R9RKnZqoWGVlU5glaPv5d3BV3rc6gDlxw7aWX1rdIjRi3BqfL5najYo+/RybGiTji0ONQsUKQIDAQAB"
+
+#define HHLog(fmt, ...) NSLog((@"[HttpHelper Log]  "fmt), ##__VA_ARGS__);
+//#define HHLog(...);
+
+@implementation HttpHelper
+
+static HttpHelper *_JSONRequestManager;
+static HttpHelper *_HTTPRequestManager;
+
++(HttpHelper *)JSONRequestManager{
+    if (!_JSONRequestManager) {
+        _JSONRequestManager = [[HttpHelper alloc]init];
+        _JSONRequestManager.manager = [[AFHTTPSessionManager alloc]initWithBaseURL:[NSURL URLWithString:kBaseURL]];
+        _JSONRequestManager.manager.requestSerializer = [AFJSONRequestSerializer serializer];
+        [_JSONRequestManager.manager.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+        ((AFJSONResponseSerializer *)_JSONRequestManager.manager.responseSerializer).removesKeysWithNullValues = YES;
+        _JSONRequestManager.manager.requestSerializer.timeoutInterval = 20;
+        [_JSONRequestManager.manager.requestSerializer setValue:nil forHTTPHeaderField:@"x-auth-token"];
+    }
+    
+    return _JSONRequestManager;
+}
+
++(HttpHelper *)HTTPRequestManager{
+    if (!_HTTPRequestManager) {
+        _HTTPRequestManager = [[HttpHelper alloc]init];
+        _HTTPRequestManager.manager = [[AFHTTPSessionManager alloc]initWithBaseURL:[NSURL URLWithString:kBaseURL]];
+        
+        _HTTPRequestManager.manager.responseSerializer = [AFHTTPResponseSerializer serializer];
+        _HTTPRequestManager.manager.requestSerializer.timeoutInterval = 20;
+        
+    }
+    
+    return _HTTPRequestManager;
+}
+
+
+- (void)POST:(NSString *)post parameters:(id)parameters success:(requestSuccessBlock)success failure:(requestFailureBlock)failure {
+    
+    //设置https的自验证书
+    [self stepSesecurityPolicy];
+
+//    //加密
+//    NSData *data = [NSJSONSerialization dataWithJSONObject:parameters options:NSJSONWritingPrettyPrinted error:nil];
+//    NSString *jsonStr = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
+//    NSString *dataStr = [GFBRSA encryptString:jsonStr publicKey:KPublicKey];
+//    NSDictionary *JsonParameters = @{@"data":dataStr};
+//
+    NSString *fullUrlStr = [NSString stringWithFormat:@"%@%@",kBaseURL,post];
+    [self.manager POST:fullUrlStr parameters:parameters progress:^(NSProgress * _Nonnull uploadProgress) {
+        
+    } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        if (!success) return;
+        
+        //若返回的数据为data类型,则解析为Json类型
+        if ([responseObject isKindOfClass:[NSData class]]) {
+            id res = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableContainers error:nil];
+            //状态码
+            int status = [res[@"status"] intValue];
+            NSString *msg = res[@"msg"];
+            NSDictionary *data = res[@"data"];
+            
+            success(data, responseObject, status, msg);
+            HHLog(@"接口名:%@ \n入参项:%@\n出参项:%@\n状态码:%d",post,parameters,res, status);
+            return;
+        }
+        
+        id responseData = nil;
+        NSInteger status;
+        NSString *msg = @"";
+        if ([responseObject isKindOfClass:[NSDictionary class]]) {
+            if (responseObject[@"data"]) {
+                responseData = responseObject[@"data"];
+                status = [responseObject[@"status"] intValue];
+                msg = responseObject[@"msg"];
+            }
+        } else if ([responseObject isKindOfClass:[NSArray class]]) {
+            responseData = responseObject;
+        }
+        success(responseData, responseObject, status, msg);
+        HHLog(@"服务器返回非Data类型数据 \n 接口名:%@ \n入参项:%@\n出参项:%@",post,parameters,responseObject);
+        
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        if (!failure) return;
+        
+        HHLog(@"请求失败\n接口名:%@ \n入参项:%@\nerror:%@",post,parameters,error);
+        failure(task, error);
+    }];
+}
+
+
+//设置https的自验证书
+-(void)stepSesecurityPolicy
+{
+    AFSecurityPolicy * securityPolicy = [AFSecurityPolicy policyWithPinningMode:AFSSLPinningModeNone];
+    //allowInvalidCertificates 是否允许无效证书（也就是自建的证书），默认为NO
+    //如果是需要验证自建证书，需要设置为YES
+    securityPolicy.allowInvalidCertificates = YES;
+    //validatesDomainName 是否需要验证域名，默认为YES；
+    //假如证书的域名与你请求的域名不一致，需把该项设置为NO
+    //主要用于这种情况：客户端请求的是子域名，而证书上的是另外一个域名。因为SSL证书上的域名是独立的，假如证书上注册的域名是www.google.com，那么mail.google.com是无法验证通过的；当然，有钱可以注册通配符的域名*.google.com，但这个还是比较贵的。
+    securityPolicy.validatesDomainName = NO;
+    //validatesCertificateChain 是否验证整个证书链，默认为YES
+    //设置为YES，会将服务器返回的Trust Object上的证书链与本地导入的证书进行对比，这就意味着，假如你的证书链是这样的：
+    //GeoTrust Global CA
+    //    Google Internet Authority G2
+    //        *.google.com
+    //那么，除了导入*.google.com之外，还需要导入证书链上所有的CA证书（GeoTrust Global CA, Google Internet Authority G2）；
+    //如是自建证书的时候，可以设置为YES，增强安全性；假如是信任的CA所签发的证书，则建议关闭该验证；
+    self.manager.securityPolicy = securityPolicy;
+}
+
+- (void)postImageToSerive:(NSString *)URL data:(NSData *)data parameters:(NSDictionary *)dict
+{
+    //1.创建管理者对象
+    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+    manager.responseSerializer = [AFJSONResponseSerializer serializer];
+    manager.requestSerializer = [AFJSONRequestSerializer serializer];
+    
+    //2.上传文件
+    [manager POST:URL parameters:dict constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
+        
+        //上传文件参数
+        [formData appendPartWithFileData:data name:@"userHeader" fileName:@"userHeader.png" mimeType:@"image/jpeg"];
+        
+    } progress:^(NSProgress * _Nonnull uploadProgress) {
+        
+        //打印上传进度
+        CGFloat progress = 100.0 * uploadProgress.completedUnitCount / uploadProgress.totalUnitCount;
+        //NSLog(@"%.2lf%%", progress);
+        
+    } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        
+        //请求成功
+        //NSLog(@"请求成功：%@",responseObject);
+        
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        
+        //请求失败
+        //NSLog(@"请求失败：%@",error);
+        
+    }];
+}
+
+@end
+

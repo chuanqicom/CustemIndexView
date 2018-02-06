@@ -1,0 +1,173 @@
+//
+//  QueryStartViewController.m
+//  GFB
+//
+//  Created by xiebin on 16/9/23.
+//  Copyright © 2016年 Vision Credit  Financial Technology Cpmpany Limited. All rights reserved.
+//
+
+#import "QueryStartViewController.h"
+#import "ProvincesChooseViewController.h"
+#import "AccumulationFundCityModel.h"
+#import "CityModel.h"
+
+@interface QueryStartViewController ()
+
+@property (nonatomic, strong) AccumulationFundCityModel  *accumulationFundCityModel;
+@property (nonatomic, strong) NSArray                    *sectionTitles;
+
+@property (weak, nonatomic) IBOutlet UIButton *checkBtn;
+
+@end
+
+@implementation QueryStartViewController
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    [self.view setBackgroundColor:COLOR(238, 238, 238, 1)];
+    
+}
+
+- (NSString *)navigationTitle
+{
+    return @"公积金查询";
+}
+
+- (void)navLeftButtonAction
+{
+    [self.navigationController popToRootViewControllerAnimated:YES];
+}
+
+- (IBAction)queryButtonAction:(UIButton *)sender
+{
+    //请求
+    [self initializeCityListRequest];
+}
+
+// 懒加载实例化数组
+- (NSArray *)sectionTitles
+{
+    if (!_sectionTitles)
+    {
+        _sectionTitles = [[NSArray alloc] init];
+    }
+    return _sectionTitles;
+}
+
+#pragma mark - Request
+- (void)initializeCityListRequest
+{
+    [GFBProgressHUD showBlockHUD];
+    
+    NSDictionary *parames = @{@"reqType": @"HF"};
+    
+    [[HttpHelper JSONRequestManager] POST:REQEST_CITY parameters:parames success:^(id resultDic, id responseObject, NSInteger code, NSString *errorMsg)
+    {
+        
+        if (code == 1)
+        {
+            [GFBProgressHUD dismiss];
+           
+            self.accumulationFundCityModel = [AccumulationFundCityModel mj_objectWithKeyValues:resultDic];
+            //排序
+            [self sortedCitys];
+            
+            ProvincesChooseViewController *provincesChooseVC = [[ProvincesChooseViewController alloc]init];
+            [self.navigationController pushViewController:provincesChooseVC animated:YES];
+            provincesChooseVC.accumulationFundCityModel = self.accumulationFundCityModel;
+            provincesChooseVC.sectionTitles = self.sectionTitles;
+        }
+        else
+        {
+            [GFBProgressHUD showHUDTipStr:errorMsg];
+        }
+        
+    } failure:^(NSURLSessionDataTask *operation, NSError *error) {
+    
+        [GFBProgressHUD showNetworkError];
+    }];
+    
+}
+
+#pragma mark - 数据排序
+- (void)sortedCitys
+{
+    NSString *temString;
+    
+    //排序
+    NSMutableArray *oldArray = [NSMutableArray array];
+    
+    for (int i = 0; i < self.accumulationFundCityModel.Result.count; i++)
+    {
+        CityModel *model = self.accumulationFundCityModel.Result[i];
+        [oldArray addObject:model.firstLetter];
+    }
+    
+    //获取排序之后的字符串
+    NSArray *newArray = [oldArray sortedArrayUsingSelector:@selector(compare:)];
+    
+    //排重相同字符串(用于tableview section title)
+    NSArray *temArray = [newArray mutableCopy];
+    NSSet *set = [NSSet setWithArray:temArray];
+    self.sectionTitles = [set sortedArrayUsingDescriptors:@[[[NSSortDescriptor alloc] initWithKey:nil ascending:YES]]];
+    
+    //根据排序后的字符串,比较然后确定index
+    for (int i = 0; i < newArray.count; i++)
+    {
+        NSString *cityName = newArray[i];
+        for (CityModel *city in self.accumulationFundCityModel.Result)
+        {
+            if ([city.firstLetter isEqualToString:cityName])
+            {
+                city.index = i;
+            }
+        }
+    }
+    
+    //根据index排序
+    NSMutableArray *sortedDatas = [NSMutableArray array];
+    
+    for (int i = 0; i < self.accumulationFundCityModel.Result.count; i++)
+    {
+        for (CityModel *city in self.accumulationFundCityModel.Result)
+        {
+            if (city.index == i)
+            {
+                [sortedDatas addObject:city];
+            }
+        }
+    }
+    
+    NSMutableArray *finallyArray = [NSMutableArray array];
+    //相同的首字母放入一个数组中
+    for (int i = 0; i < sortedDatas.count; i++)
+    {
+        //获取首字母
+        CityModel *city = sortedDatas[i];
+        if ([temString isEqualToString:city.firstLetter])
+        {
+            continue;
+        }
+        
+        temString = city.firstLetter;
+        
+        //相同的首字母放入一个数组中
+        NSMutableArray *temArray = [NSMutableArray array];
+        
+        for (CityModel *model in sortedDatas)
+        {
+            if ([model.firstLetter isEqualToString:temString])
+            {
+                [temArray addObject:model];
+            }
+        }
+        [finallyArray addObject:temArray];
+        
+    }
+    
+    //得到排序后的数据
+    self.accumulationFundCityModel.Result = finallyArray;
+}
+
+@end

@@ -1,0 +1,27 @@
+//
+//  GFBProgressHUD.h
+//  GFB
+//
+//  Created by 维信金科 on 16/8/18.
+//  Copyright © 2016年 vcredit. All rights reserved.
+//
+
+#import <Foundation/Foundation.h>
+#import "SVProgressHUD.h"
+#import "GFBLoadingView.h"
+
+@interface GFBProgressHUD : NSObject
+
+//显示文本HUD
++ (void)showHUDTipStr:(NSString *)tipStr;
+
+//显示图片文本HUD
++ (void)showHUDImageName:(NSString *)imageName Text:(NSString *)text;
+
+#pragma mark - 自定义HUD
++ (void)showBlockHUD;
++ (void)showNetworkError;
++ (void)dismiss;
+
+
+@end

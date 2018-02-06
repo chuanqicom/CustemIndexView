@@ -1,0 +1,72 @@
+//
+//  DataSingletonApi.h
+//  GFB
+//
+//  Created by bin xie on 2016/10/30.
+//  Copyright © 2016年 Shanghai Aopai Data Technology Co., Ltd. All rights reserved.
+//
+
+#import <UIKit/UIKit.h>
+
+//登录状态 key
+extern NSString *const LOGIN_STATE_KEY;
+
+//版本号
+extern NSString *const LASTVERSION;
+
+//token
+extern NSString *const TOKEN;
+
+//APPid
+extern NSString *const APPID;
+
+//Image路径
+extern NSString *const IMAGE_PATH;
+
+//客户id
+extern NSString *const CUSTOMERID;
+
+//身份证号码
+extern NSString *const IDENTITY_NO;
+
+//身份证有效期
+extern NSString *const IDENTITY_EXPIRES;
+
+//客户姓名
+extern NSString *const REAL_NAME;
+
+//账号/手机号
+extern NSString *const MODILE;
+
+//首页状态 page
+extern NSString *const PAGE;
+
+#pragma mark - 通知
+//判断Token
+extern NSString * const CHECK_TOKEN;
+
+//学历
+extern NSString *const EDUCATIONDEGREE ;
+
+//婚姻
+extern NSString *const MARRYSTATUS;
+//是否上传过手持身份证照 identityPerson
+extern NSString *const IDENTITYPERSON;
+
+//是否展示登录控制器
+extern NSString * const IS_SHOW_LOGINVIEWCONTROLLER;
+
+//首页需要重新请求数据
+extern NSString * const HOME_NEED_REQUEST;
+
+extern NSString * const GESTUREPASSWORD_IDENTIFICATION;
+
+//推送系统消息 标识
+extern NSString * const SYSTEMPUSHMESSAGE_CUSTMERID;
+
+//推送个人消息未读数
+extern NSString * const NOREADCOUNT;
+
+
+
+

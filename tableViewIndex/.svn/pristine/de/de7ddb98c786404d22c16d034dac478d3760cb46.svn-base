@@ -1,0 +1,32 @@
+//
+//  GFBSelectTableView.h
+//  GFB
+//
+//  Created by 维信金科 on 16/11/8.
+//  Copyright © 2016年 Shanghai Aopai Data Technology Co., Ltd. All rights reserved.
+//
+
+#import <UIKit/UIKit.h>
+
+typedef NS_ENUM(NSInteger) {
+    AnimationTypeSuccess,
+    AnimationTypeFail
+} AnimationJudgeType;
+
+@interface GFBSelectView : UIView
+
+- (instancetype)initWithFrame:(CGRect)frame animationType:(AnimationJudgeType)animationType;
+/**
+ 邦卡动画 成功
+ */
+- (void)showSuccessWithanimationDuration:(NSTimeInterval)animationDuration Complete:(void(^)())complete;
+
+/**
+ 邦卡动画 失败
+ */
+- (void)showFailWithanimationDuration:(NSTimeInterval)animationDuration Complete:(void(^)())complete;
+
+
+
+@end
+

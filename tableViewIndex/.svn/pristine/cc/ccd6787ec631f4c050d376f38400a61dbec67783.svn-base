@@ -1,0 +1,163 @@
+//
+//  TimeUtils.h
+//  GFB
+//
+//  Created by 维信金科 on 16/9/22.
+//  Copyright © 2016年 Vision Credit  Financial Technology Cpmpany Limited. All rights reserved.
+//
+
+#import <Foundation/Foundation.h>
+
+
+typedef NS_ENUM(NSInteger, SecondToDateFormat) {
+    //例：2015年7月9日 17:30
+    /**
+     *  年：2015
+     */
+    Second_To_Date_Format_yyyy = 0,
+    /**
+     *  月：07
+     */
+    Second_To_Date_Format_MM,
+    /**
+     *  日：09
+     */
+    Second_To_Date_Format_dd,
+    /**
+     *  时：05
+     */
+    Second_To_Date_Format_hh,
+    /**
+     *  时：17
+     */
+    Second_To_Date_Format_HH,
+    /**
+     *  分：30
+     */
+    Second_To_Date_Format_mm,
+    /**
+     *  日期：15-07-09
+     */
+    Second_To_Date_Format_yy_MM_dd,
+    /**
+     *  日期：2015-07-09
+     */
+    Second_To_Date_Format_yyyy_MM_dd,
+    /**
+     *  日期：2015/07/09
+     */
+    Second_To_Date_Format_yyyy_s_MM_s_dd,
+    /**
+     *  日期：2015年07月09日
+     */
+    Second_To_Date_Format_yyyyy_MMM_ddd,
+    /**
+     *  日期: 20150709
+     */
+    Second_To_Date_Format_yyyy_e_MM_e_dd,
+    /**
+     *  时间：17:30
+     */
+    Second_To_Date_Format_HH_mm,
+    /**
+     *  日期时间：2015-07-09 17:30
+     */
+    Second_To_Date_Format_yyyy_MM_dd_HH_mm,
+    /**
+     *  日期时间：2015/07/09 17:30
+     */
+    Second_To_Date_Format_yyyy_s_MM_s_dd_HH_mm
+};
+
+@interface TimeUtils : NSObject
+
+@property(nonatomic,strong)NSDateFormatter *dateFormatter;
+
++ (TimeUtils *)shared;
+
+
+#pragma mark - 时间处理
+
+/**
+ *  获取系统时间,按照指定格式
+ *
+ *  @param format 格式字符串
+ *
+ *  @return 指定格式时间字符串
+ */
++ (NSString *)getSystemTimeStringWithFormat:(NSString *)format;
+
+/**
+ *  时间戳转日期
+ *
+ *  @param timeInterval 时间(毫秒)
+ *  @param formatString 格式字符串
+ *
+ *  @return 指定格式时间字符串
+ */
++ (NSString *)secondToDate:(long long)timeInterval WithFormat:(NSString *)formatString;
+
+/**
+ *  时间戳转日期
+ *
+ *  @param timeInterval 时间(毫秒)
+ *  @param format       时间格式枚举值
+ *
+ *  @return 指定格式时间字符串
+ */
++ (NSString *)secondToDate:(long long)timeInterval SecondToDateFormat:(SecondToDateFormat)format;
+
+/**
+ *  秒转成气泡显示格式字符串
+ *
+ *  @param timeInterval 时长
+ *
+ *  @return 指定格式字符串
+ */
++ (NSString *)secondToBubbleFormat:(long long)timeInterval;
+
+/**
+ *  根据起始时间和结束时间 返回格式化后的时间字符串
+ *  2015-06-19 19:19     2015-06-19 21:19     则返回 2015-06-19 19:19 - 21:19
+ *
+ *  2015-06-19 19:19     2015-06-20 21:19     则返回 2015-06-19 19:19 - 2015-06-20 21:19
+ *
+ *  @param beginTime 开始时间
+ *  @param endTime   结束时间
+ *
+ *  @return 格式好的时间字符串
+ */
++ (NSString *)timeStringWithBeginTime:(long long)beginTime endTime:(long long)endTime;
+
+
+/**
+ *  根据起始时间和结束时间 返回格式化后的时间字符串 如果ishtml为YES,则返回富文本
+ *  2015-06-19 19:19     2015-06-19 21:19   isAllDay为NO,则返回 2015-06-19 19:19 - 21:19
+ *  isAllDay为YES,则返回 2015-06-19 全天
+ *
+ *  @param beginTime 开始时间
+ *  @param endTime   结束时间
+ *
+ *  @return 格式好的时间字符串
+ */
++ (NSString *)faceToFaceTimeString:(long long)beginTime endTime:(long long)endTime isHtml:(BOOL)ishtml isAllDay:(BOOL)isAllDay;
+
+/**
+ *  总耗时间
+ *
+ *  @param timeInterval longlong
+ *
+ *  @return 总耗时字符串
+ */
++ (NSString *)totalTimeByInterval:(long long)timeInterval;
+
+/**
+ *  将日期转换为周几
+ *
+ *  @param timeInterval longlong
+ *
+ *  @return 周几 字符串
+ */
++ (NSString *)weekeyDayStringFromInterval:(long long)timeInterval;
+
+@end

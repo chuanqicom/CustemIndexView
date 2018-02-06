@@ -1,0 +1,237 @@
+//
+//  TimeUtils.m
+//  GFB
+//
+//  Created by 维信金科 on 16/9/22.
+//  Copyright © 2016年 Vision Credit  Financial Technology Cpmpany Limited. All rights reserved.
+//
+
+#import "TimeUtils.h"
+
+@implementation TimeUtils
+
++ (TimeUtils *)shared
+{
+    static TimeUtils *singleton = nil;
+    static dispatch_once_t pred;
+    dispatch_once(&pred, ^{
+        singleton = [[TimeUtils alloc] init];
+        singleton.dateFormatter = [[NSDateFormatter alloc] init];
+    });
+    return singleton;
+}
+
+/**
+ *  获取系统时间,按照指定格式
+ *
+ *  @param format 格式字符串
+ *
+ *  @return 指定格式时间字符串
+ */
++ (NSString *)getSystemTimeStringWithFormat:(NSString *)format {
+    NSString *date;
+    NSDateFormatter *formatter = [self shared].dateFormatter;
+    [formatter setDateFormat:format];
+    date = [formatter stringFromDate:[NSDate date]];
+    return date;
+}
+
+/**
+ *  时间戳转日期
+ *
+ *  @param timeInterval 时间(毫秒)
+ *  @param formatString 格式字符串
+ *
+ *  @return 指定格式时间字符串
+ */
++ (NSString *)secondToDate:(long long)timeInterval WithFormat:(NSString *)formatString {
+    NSDate *date = [[NSDate alloc] initWithTimeIntervalSince1970:timeInterval / 1000];
+    NSDateFormatter *dateFormat = [self shared].dateFormatter;
+    dateFormat.dateFormat = formatString;
+    return [dateFormat stringFromDate:date];
+}
+
+/**
+ *  时间戳转日期
+ *
+ *  @param timeInterval 时间(毫秒)
+ *  @param format       时间格式枚举值
+ *
+ *  @return 指定格式时间字符串
+ */
++ (NSString *)secondToDate:(long long)timeInterval SecondToDateFormat:(SecondToDateFormat)format {
+    
+    NSDictionary *dataFormatDic = @{@(Second_To_Date_Format_yyyy):@"yyyy",
+                                    @(Second_To_Date_Format_MM):@"MM",
+                                    @(Second_To_Date_Format_dd):@"dd",
+                                    @(Second_To_Date_Format_hh):@"hh",
+                                    @(Second_To_Date_Format_HH):@"HH",
+                                    @(Second_To_Date_Format_mm):@"mm",
+                                    @(Second_To_Date_Format_yy_MM_dd):@"yy-MM-dd",
+                                    @(Second_To_Date_Format_yyyy_MM_dd):@"yyyy-MM-dd",
+                                    @(Second_To_Date_Format_yyyy_s_MM_s_dd):@"yyyy/MM/dd",
+                                    @(Second_To_Date_Format_yyyy_e_MM_e_dd):@"yyyyMMdd",
+                                    @(Second_To_Date_Format_yyyyy_MMM_ddd):@"yyyy年MM月dd日",
+                                    @(Second_To_Date_Format_HH_mm):@"HH:mm",
+                                    @(Second_To_Date_Format_yyyy_MM_dd_HH_mm):@"yyyy-MM-dd HH:mm",
+                                    @(Second_To_Date_Format_yyyy_s_MM_s_dd_HH_mm):@"yyyy/MM/dd HH:mm"};
+    
+    NSDate *date = [[NSDate alloc] initWithTimeIntervalSince1970:timeInterval / 1000];
+    NSDateFormatter *dateFormat = [self shared].dateFormatter;
+    dateFormat.dateFormat = dataFormatDic[@(format)];
+    return [dateFormat stringFromDate:date];
+}
+
+/**
+ *  秒转成气泡显示格式字符串
+ *
+ *  @param second 时长
+ *
+ *  @return 指定格式字符串
+ */
++ (NSString *)secondToBubbleFormat:(long long)timeInterval {
+    NSString *result;
+    
+    if (timeInterval == 60) {
+        return @"60''";
+    }
+    
+    NSInteger min = timeInterval / 60.0;
+    NSInteger sec = timeInterval % 60;
+    if (min > 0) {
+        result = [NSString stringWithFormat:@"%@'%@''", @(min), @(sec)];
+    } else {
+        result = [NSString stringWithFormat:@"%@''", @(sec)];
+    }
+    
+    return result;
+}
+
+/**
+ * 根据后台返回的 起始时间 格式化字符串
+ */
++ (NSString *)timeStringWithBeginTime:(long long)beginTime endTime:(long long)endTime{
+    NSString *beginTimeStr = [TimeUtils secondToDate:beginTime WithFormat:@"yyyy-MM-dd HH:mm"];
+    NSString *endTimeStr = [TimeUtils secondToDate:endTime WithFormat:@"yyyy-MM-dd HH:mm"];
+    
+    NSString *result;
+    NSString *beginTimeDateStr = [beginTimeStr substringToIndex:10];
+    NSString *endTimeDateStr   = [endTimeStr substringToIndex:10];
+    if([beginTimeDateStr isEqualToString:endTimeDateStr]){
+        NSRange subStrRange = NSMakeRange(11, 5);
+        NSString *beginTimeSubStr = [beginTimeStr substringWithRange:subStrRange];
+        NSString *endTimeSubStr = [endTimeStr substringWithRange:subStrRange];
+        result = [NSString stringWithFormat:@"%@ %@-%@", beginTimeDateStr, beginTimeSubStr, endTimeSubStr];
+    }else{
+        result = [NSString stringWithFormat:@"%@ - %@", beginTimeStr, endTimeStr];
+    }
+    
+    return result;
+}
+
+//html格式的面对面formatstring
+#define HTMLTimeFormatString @"<font size=12 color='#FC747D'>%@</font><font size=12 color='#7A7672'>%@</font><font size=12 color='#FC747D'>%@</font>"
++ (NSString *)faceToFaceTimeString:(long long)beginTime endTime:(long long)endTime isHtml:(BOOL)ishtml isAllDay:(BOOL)isAllDay{
+    NSString *htmlTimeString = nil;
+    NSString *startTimeString = [TimeUtils secondToDate:beginTime SecondToDateFormat:Second_To_Date_Format_yyyy_MM_dd_HH_mm];
+    
+    NSString *endTimeString = [TimeUtils secondToDate:endTime SecondToDateFormat:Second_To_Date_Format_yyyy_MM_dd_HH_mm];
+    
+    NSArray *startTimeStringArr = [startTimeString componentsSeparatedByString:@" "];
+    NSArray *endTimeStringArr = [endTimeString componentsSeparatedByString:@" "];
+    
+    if (!endTimeStringArr || endTimeStringArr.count < 2) {
+        return @"";
+    }
+    
+    //    long long offsetOneDay = llabs(llabs(endTime - startTime) - MS_INONDAY);
+    if (isAllDay) {
+        if (ishtml) {
+            htmlTimeString = [NSString stringWithFormat:HTMLTimeFormatString,endTimeStringArr[0],@" ", @"全天"];
+            htmlTimeString = [NSString stringWithFormat:HTMLTimeFormatString,startTimeStringArr[0],@" ", @"全天"];
+        } else {
+            htmlTimeString = [NSString stringWithFormat:@"%@%@%@",endTimeStringArr[0],@" ", @"全天"];
+            htmlTimeString = [NSString stringWithFormat:@"%@%@%@",startTimeStringArr[0],@" ", @"全天"];
+        }
+    } else {
+        if ([startTimeStringArr[0] isEqualToString:endTimeStringArr[0]]) {
+            endTimeString = endTimeStringArr[1];
+        }
+        if (ishtml) {
+            htmlTimeString = [NSString stringWithFormat:HTMLTimeFormatString,startTimeString,@" 至 ", endTimeString];
+        } else {
+            htmlTimeString = [NSString stringWithFormat:@"%@%@%@",startTimeString,@" 至 ", endTimeString];
+        }
+    }
+    return htmlTimeString;
+}
+
++ (NSString *)totalTimeByInterval:(long long)timeInterval
+{
+    NSString *totalTimeString = @"0秒";
+    if (timeInterval > 0) {
+        long long h = 0;
+        long long m = 0;
+        long long t = 0;
+        long long s = timeInterval;
+        t = s / (3600 * 24);
+        h = s / 3600;
+        m = s % 3600 / 60;
+        s = s % 3600 % 60;
+        if(t > 0){
+            totalTimeString = [NSString stringWithFormat:@"约%@天",@(t)];
+        }else if(h > 0){
+            totalTimeString = [NSString stringWithFormat:@"约%@时%@分",@(h),@(m)];
+        }else if(m > 0){
+            totalTimeString = [NSString stringWithFormat:@"约%@分",@(m)];
+        }else{
+            totalTimeString = [NSString stringWithFormat:@"约%@秒",@(s)];
+        }
+    }
+    return totalTimeString;
+}
+
+/**
+ *  将日期转换为周几
+ *
+ *  @param timeInterval longlong
+ *
+ *  @return 周几 字符串
+ */
++ (NSString *)weekeyDayStringFromInterval:(long long)timeInterval
+{
+    NSDate *date = [[NSDate alloc] initWithTimeIntervalSince1970:timeInterval / 1000];
+    NSCalendar *calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
+    NSInteger unitFlags = NSWeekdayCalendarUnit;
+    NSDateComponents *comps = [calendar components:unitFlags fromDate:date];
+    NSInteger weekDay = [comps weekday];
+    NSString *weekDayString;
+    switch (weekDay) {
+        case 1:
+            weekDayString = @"周日";
+            break;
+        case 2:
+            weekDayString = @"周一";
+            break;
+        case 3:
+            weekDayString = @"周二";
+            break;
+        case 4:
+            weekDayString = @"周三";
+            break;
+        case 5:
+            weekDayString = @"周四";
+            break;
+        case 6:
+            weekDayString = @"周五";
+            break;
+        case 7:
+            weekDayString = @"周六";
+            break;
+        default:
+            break;
+    }
+    return weekDayString;
+}
+
+@end

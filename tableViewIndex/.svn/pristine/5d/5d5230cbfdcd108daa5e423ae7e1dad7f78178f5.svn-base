@@ -1,0 +1,25 @@
+//
+//  RoundView.m
+//  WrapperClass
+//
+//  Created by xiebin on 16/10/4.
+//  Copyright © 2016年 xiebin. All rights reserved.
+//
+
+#import "RoundView.h"
+
+@implementation RoundView
+
+- (instancetype)initWithCoder:(NSCoder *)aDecoder
+{
+    self = [super initWithCoder:aDecoder];
+
+    if (self)
+    {
+        self.layer.cornerRadius = 10.f;
+        self.layer.masksToBounds = YES;
+    }
+    return self;
+}
+
+@end

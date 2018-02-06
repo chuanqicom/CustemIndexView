@@ -1,0 +1,34 @@
+//
+//  QueryResultModel.h
+//  GFB
+//
+//  Created by 维信金科 on 16/9/26.
+//  Copyright © 2016年 Vision Credit  Financial Technology Cpmpany Limited. All rights reserved.
+//
+
+#import <Foundation/Foundation.h>
+
+@interface QueryResultModel : NSObject
+
+@property (nonatomic,   copy) NSString  *EndTime;
+@property (nonatomic, strong) NSArray   *Result;  //结果
+
+@property (nonatomic,   copy) NSString  *Name;
+@property (nonatomic,   copy) NSString  *IdentityCard;
+@property (nonatomic,   copy) NSString  *CompanyName;
+
+
+@property (nonatomic, assign) float      personalMonthPayAmount;
+@property (nonatomic, assign) float      companyMonthPayAmount;
+
+//当前账户总余额
+@property (nonatomic, assign) float       totalAmount;
+
+#pragma mark - 自定义变量
+//当前查询时间
+@property (nonatomic,   copy) NSString    *queryTime;
+//当月缴纳总金额
+@property (nonatomic, assign) float        monthAmount;
+
+@end
+

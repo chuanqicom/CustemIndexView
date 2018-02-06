@@ -1,0 +1,26 @@
+//
+//  FormParamsModel.h
+//  GFB
+//
+//  Created by 维信金科 on 16/9/24.
+//  Copyright © 2016年 Vision Credit  Financial Technology Cpmpany Limited. All rights reserved.
+//
+
+#import <Foundation/Foundation.h>
+
+@interface FormParamsModel : NSObject
+
+@property (nonatomic, copy) NSString  *ParameterName;
+@property (nonatomic, copy) NSString  *ParameterCode;
+@property (nonatomic, copy) NSString  *ParameterMessage;
+@property (nonatomic, copy) NSString  *Orderby;
+
+//图片64格式
+@property (nonatomic, copy) NSString  *codeImage64String;
+
+#pragma mark - 自定义变量
+//textfield输入的值
+@property (nonatomic, strong) NSString  *paramsValue;
+
+
+@end

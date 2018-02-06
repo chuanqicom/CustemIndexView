@@ -1,0 +1,193 @@
+//
+//  CityChooseViewController.m
+//  GFB
+//
+//  Created by xiebin on 16/9/23.
+//  Copyright © 2016年 Vision Credit  Financial Technology Cpmpany Limited. All rights reserved.
+//
+
+#import "CityChooseViewController.h"
+#import "ProvidentFundLoginViewController.h"
+#import "AccumulationFundSettingModel.h"
+#import "AccumulationFundDetail.h"
+
+@interface CityChooseViewController ()<UITableViewDataSource,UITableViewDelegate>
+
+@property (nonatomic, strong) NSArray                        *formParamsModels;
+@property (nonatomic,   copy) NSString                       *token;
+@property (nonatomic,   copy) NSString                       *codeBase64;
+@property (nonatomic, strong) AccumulationFundSettingModel   *settingModel;
+@property (nonatomic, strong) CityDetailModel                *cityDeitalModel;
+@property (nonatomic, strong) AccumulationFundDetail         *fundDetailModel;
+
+@end
+
+@implementation CityChooseViewController
+
+static NSString *cellIdentifier = @"cell";
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    [self createTableView];
+
+}
+
+- (void)createTableView
+{
+    UITableView *tableView = [[UITableView alloc]initWithFrame:self.view.bounds];
+    [self.view addSubview:tableView];
+    tableView.showsVerticalScrollIndicator = NO;
+    tableView.showsHorizontalScrollIndicator = NO;
+    tableView.backgroundColor = COLOR(238, 238, 238, 1);
+    tableView.delegate = self;
+    tableView.dataSource = self;
+}
+
+- (NSString *)navigationTitle
+{
+    return @"选择城市";
+}
+
+#pragma mark - UITableViewDataSource
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    return self.cityModel.CityLevel.count;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    UITableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
+    
+    if (cell == nil)
+    {
+        cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier];
+    }
+    
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    CityDetailModel *deital = self.cityModel.CityLevel[indexPath.row];
+    cell.textLabel.text =  [NSString stringWithFormat:@"%@公积金",deital.CityName];
+    cell.textLabel.font = [UIFont systemFontOfSize:16];
+    
+    return cell;
+}
+
+#pragma mark - UITableViewDelegate
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return 50;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+{
+    return 40;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
+{
+    return 1;
+}
+
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
+{
+    UILabel *headerLabel = [[UILabel alloc] init];
+    headerLabel.frame = CGRectMake(10, 0, 100, 40);
+    headerLabel.font = [UIFont systemFontOfSize:16];
+    headerLabel.text = [NSString stringWithFormat:@"%@", self.cityName];
+    
+    UIView *headerView = [[UIView alloc] init];
+    headerView.backgroundColor = COLOR(238, 238, 238, 1);
+    [headerView addSubview:headerLabel];
+    
+    return headerView;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    self.cityDeitalModel = self.cityModel.CityLevel[indexPath.row];
+    
+    [self accumulationFundQueryNetworkRequests];
+}
+
+// 判断点击的cell的城市是否可以查询 网络请求
+- (void)checkWhetherSupportQueryNetworkRequests
+{
+    NSDictionary *params = @{@"reqType": @"HF",
+                             @"cityCode": self.cityDeitalModel.CityCode};
+    
+    [[HttpHelper JSONRequestManager] POST:AccumulationFund_SETTING parameters:params success:^(id resultDic, id responseObject, NSInteger code, NSString *errorMsg) {
+        
+        if (code == 1)
+        {
+            self.settingModel = [AccumulationFundSettingModel mj_objectWithKeyValues:resultDic];
+            
+            self.fundDetailModel = self.settingModel.Result.FormSettings.firstObject;
+            
+            self.formParamsModels = self.fundDetailModel.FormParams;
+            // 不支持的城市弱提示
+            if (self.fundDetailModel.FormParams == nil)
+            {
+                [GFBProgressHUD showHUDTipStr:@"暂不支持此城市公积金查询"];
+                return;
+            }
+           
+            [GFBProgressHUD dismiss];
+            
+            ProvidentFundLoginViewController *ProvidentFundLoginVC = [[ProvidentFundLoginViewController alloc] init];
+            ProvidentFundLoginVC.detailModel = self.cityDeitalModel;
+            ProvidentFundLoginVC.fundDetailModel = self.fundDetailModel;
+            ProvidentFundLoginVC.tokenValue = self.token;
+            ProvidentFundLoginVC.randomCodeBase64 = self.codeBase64;
+            [self.navigationController pushViewController:ProvidentFundLoginVC animated:YES];
+        }
+        else
+        {
+            [GFBProgressHUD showHUDTipStr:errorMsg];
+            return;
+        }
+        
+    } failure:^(NSURLSessionDataTask *operation, NSError *error) {
+        
+        [GFBProgressHUD showNetworkError];
+    }];
+    
+}
+
+// 拿到tokenValue 和 验证码图片 网络请求
+- (void)accumulationFundQueryNetworkRequests
+{
+    [GFBProgressHUD showBlockHUD];
+    
+    NSDictionary *params = @{@"reqType": @"HF",
+                             @"cityCode": self.cityDeitalModel.CityCode};
+
+    [[HttpHelper JSONRequestManager] POST:AccumulationFund_Init_Token parameters:params success:^(id resultDic, id responseObject, NSInteger code, NSString *errorMsg) {
+        
+        if (code == 1)
+        {
+            NSDictionary *dataDict = responseObject[@"data"];
+            
+            if ([dataDict[@"success"] integerValue] == 1)
+            {
+                self.token = [NSString stringWithFormat:@"%@",dataDict[@"tokenValue"]];
+                self.codeBase64 = [NSString stringWithFormat:@"%@",dataDict[@"randomCodeBase64"]];
+                
+                [self checkWhetherSupportQueryNetworkRequests];
+            }
+        }
+        else
+        {
+            [GFBProgressHUD showHUDTipStr:@"暂不支持此城市公积金查询"];
+            return;
+        }
+        
+    } failure:^(NSURLSessionDataTask *operation, NSError *error) {
+        
+        [GFBProgressHUD showNetworkError];
+    }];
+}
+
+
+
+
+@end

@@ -1,0 +1,346 @@
+//
+//  CustomPopUpView.m
+//  WrapperClass
+//
+//  Created by xiebin on 16/10/6.
+//  Copyright © 2016年 xiebin. All rights reserved.
+//
+
+#import "CustomPopUpView.h"
+
+@implementation CustomPopUpView
+
+- (instancetype)initWithFrame:(CGRect)frame
+            WithPopUpViewType:(PopUpViewType)popUpViewType
+                    WithTitle:(NSString *)title
+              WithPromptTitle:(NSString *)promptTitle
+                    WithImage:(UIImage  *)image
+{
+    self = [super initWithFrame:frame];
+
+    if (self)
+    {
+        [self mainView];
+
+        _PopUpViewType = popUpViewType;
+        switch (_PopUpViewType)
+        {
+            case PopUpViewPrompt:
+            {
+                _bgView.size = CGSizeMake(255, 170);
+
+                [self initTitleLabel];
+                [self initPromptContentLabel];
+                [self initHorizontalLine];
+                [self initCancelButton];
+                _promptContent.textAlignment = NSTextAlignmentCenter;
+                _promptContent.font = [UIFont systemFontOfSize:14];
+                [_cancelBtn setTitle:@"我知道了" forState:UIControlStateNormal];
+                [_cancelBtn setTitleColor:COLOR(176, 25, 26, 1) forState:UIControlStateNormal];
+                _cancelBtn.frame = CGRectMake(0, BGVIEW_HEIGHT-50, BGVIEW_WIDTH, 50);
+            }
+            break;
+
+            case PopUpViewWarning:
+            {
+                _bgView.size = CGSizeMake(255, 150);
+                
+                [self initPromptContentLabel];
+                [self initHorizontalLine];
+                [self initVerticalLine];
+                [self initConfirmButton];
+                [self initCancelButton];
+
+                _promptContent.frame = CGRectMake(0, 0, BGVIEW_WIDTH, BGVIEW_HEIGHT-51);
+            }
+            break;
+                
+            case PopUpViewCardNo:
+            {
+                _bgView.size = CGSizeMake(255, 150);
+                
+                [self initTitleLabel];
+                _titleLb.height = 30;
+                _titleLb.y = 20;
+                [self initPromptContentLabel];
+                self.promptContent.y = CGRectGetMaxY(_titleLb.frame);
+                self.promptContent.height = 30;
+
+                [self initHorizontalLine];
+                [self initVerticalLine];
+                [self initConfirmButton];
+                [self initCancelButton];
+                [self.cancelBtn setTitle:@"重新拍摄" forState:UIControlStateNormal];
+            }
+                break;
+
+            case PopUpViewImage:
+            {
+                _bgView.size = CGSizeMake(255, 300);
+                [self initTopImageView];
+                [self initTitleLabel];
+                [self initPromptContentLabel];
+                [self initHorizontalLine];
+                [self initVerticalLine];
+                [self initConfirmButton];
+                [self initCancelButton];
+
+                _topImageView.image = image;
+                _titleLb.frame = CGRectMake(0, _topImageView.frame.origin.y+133, BGVIEW_WIDTH, 30);
+                _titleLb.textColor = COLOR(176, 25, 26, 1);
+
+                _promptContent.frame = CGRectMake(0, _titleLb.frame.origin.y+30, BGVIEW_WIDTH, 40);
+            }
+            break;
+
+            case PopUpViewBank:
+            {
+                _bgView.size = CGSizeMake(295, 360);
+
+                [self initTopView];
+                [self initTitleLabel];
+                [self initCreditCardLabel];
+                [self initPromptContentLabel];
+                [self initHorizontalLine];
+                [self initDebitCardLabel];
+                [self initdebitCardContent];
+                [self initConfirmButton];
+
+                _titleLb.textColor = [UIColor whiteColor];
+                
+                _promptContent.textAlignment = NSTextAlignmentLeft;
+                _promptContent.font = [UIFont systemFontOfSize:13];
+                _promptContent.frame = CGRectMake(15, _creditCardLb.frame.origin.y+10, BGVIEW_WIDTH-30, 100);
+
+                _horizontalLine.frame = CGRectMake(7, _promptContent.frame.origin.y+100, BGVIEW_WIDTH-14, 1);
+                _debitCardLb.frame = CGRectMake(15, _horizontalLine.frame.origin.y+12, 120, 20);
+
+                _debitCardContent.frame = CGRectMake(15, _debitCardLb.frame.origin.y+10, BGVIEW_WIDTH-30, 100);
+
+                _confirmBtn.frame = CGRectMake(10, BGVIEW_HEIGHT-59, BGVIEW_WIDTH-20, 49);
+                _confirmBtn.layer.cornerRadius = 10.f;
+                _confirmBtn.layer.masksToBounds = YES;
+                _confirmBtn.layer.borderWidth = 1.f;
+                _confirmBtn.layer.borderColor = COLOR(176, 25, 26, 1).CGColor;
+            }
+            break;
+                
+            case PopSweetAlert1:
+            {
+                _bgView.size = CGSizeMake(255, 300);
+                //标题
+                [self initTitleLabel];
+                _titleLb.y = 5;
+                //副标题
+                [self initPromptContentLabel];
+                _promptContent.frame = CGRectMake(20, CGRectGetMaxY(_titleLb.frame), 215, 40);
+                _promptContent.font = [UIFont systemFontOfSize:14];
+                //中部图片
+                UIImageView *imageV = [[UIImageView alloc]initWithFrame:CGRectMake(10, CGRectGetMaxY(_promptContent.frame) + 10, 235, 113)];
+                imageV.image = image;
+                [self.bgView addSubview:imageV];
+                //横线
+                [self initHorizontalLine];
+                _horizontalLine.frame = CGRectMake(10, CGRectGetMaxY(imageV.frame) + 25, 235, 1);
+                //确定按钮
+                [self initConfirmButton];
+                _confirmBtn.width = _bgView.width;
+                _confirmBtn.center = CGPointMake(_bgView.center.x,CGRectGetMaxY(_horizontalLine.frame) + 25);
+            }
+                
+                break;
+                
+            case PopSweetAlert2:
+            {
+                _bgView.size = CGSizeMake(255, 366);
+                //标题
+                [self initTitleLabel];
+                
+                //副标题
+                [self initPromptContentLabel];
+                _promptContent.frame = CGRectMake(20, CGRectGetMaxY(_titleLb.frame) ,215, 60);
+                _promptContent.font = [UIFont systemFontOfSize:14];
+                
+                //中部图片
+                UIImageView *imageV = [[UIImageView alloc]initWithFrame:CGRectMake(60, CGRectGetMaxY(_promptContent.frame) + 8, 135, 180)];
+                imageV.image = image;
+                [self.bgView addSubview:imageV];
+                //横线
+                [self initHorizontalLine];
+                _horizontalLine.frame = CGRectMake(10, CGRectGetMaxY(imageV.frame) + 15, 235, 1);
+                //确定按钮
+                [self initConfirmButton];
+                _confirmBtn.width = _bgView.width;
+                _confirmBtn.center = CGPointMake(_bgView.center.x,341);
+            }
+                
+                break;
+        }
+        
+        _bgView.center = self.center;
+        _titleLb.text = title;
+        _promptContent.text = promptTitle;
+        
+        if (popUpViewType == PopSweetAlert2) {
+            //修改部分文字的颜色
+            NSMutableAttributedString *attr = [[NSMutableAttributedString alloc]initWithString:promptTitle];
+            //获取字符在字符串中的位置 先过滤
+            NSCharacterSet *charSet = [NSCharacterSet characterSetWithCharactersInString:@"\n"];
+            NSString *tempStr = [promptTitle stringByTrimmingCharactersInSet:charSet];
+            
+            NSRange range = [tempStr rangeOfString:@"(若本人操作请使用前置摄像头)"];
+            
+            [attr addAttribute:NSForegroundColorAttributeName value:COLOR(200, 200, 200, 1) range:range];
+            
+            [_promptContent setAttributedText:attr];
+        }
+        
+        
+    }
+    
+    return self;
+}
+
+- (void)mainView
+{
+    self.backgroundColor = [UIColor colorWithWhite:0.5f alpha: 0.7f];
+
+    _bgView = [[UIView alloc]init];
+    [self addSubview:_bgView];
+    _bgView.backgroundColor = [UIColor whiteColor];
+    _bgView.layer.cornerRadius = 10.f;
+    _bgView.layer.masksToBounds = YES;
+}
+
+// 标题
+- (void)initTitleLabel
+{
+    _titleLb = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, BGVIEW_WIDTH, 46)];
+    _titleLb.textAlignment = NSTextAlignmentCenter;
+    _titleLb.font = [UIFont systemFontOfSize:16];
+    _titleLb.textColor = COLOR(49, 49, 49, 1);
+    [_bgView addSubview:_titleLb];
+}
+
+// 信用卡副标
+- (void)initCreditCardLabel
+{
+    _creditCardLb = [[UILabel alloc]initWithFrame:CGRectMake(15, _topView.frame.origin.y+67, 120, 20)];
+    _creditCardLb.text = @"信用卡(贷记卡)";
+    _creditCardLb.textAlignment = NSTextAlignmentLeft;
+    _creditCardLb.font = [UIFont systemFontOfSize:15];
+    _creditCardLb.textColor = COLOR(49, 49, 49, 1);
+    [_bgView addSubview:_creditCardLb];
+
+}
+
+// 借记卡副标
+- (void)initDebitCardLabel
+{
+    _debitCardLb = [[UILabel alloc]init];
+    _debitCardLb.text = @"储蓄卡(借记卡)";
+    _debitCardLb.textAlignment = NSTextAlignmentLeft;
+    _debitCardLb.font = [UIFont systemFontOfSize:15];
+    _debitCardLb.textColor = COLOR(49, 49, 49, 1);
+    [_bgView addSubview:_debitCardLb];
+}
+
+// 提示内容 也用做信用卡相关支持银行内容
+- (void)initPromptContentLabel
+{
+    _promptContent = [[UILabel alloc]initWithFrame:CGRectMake(15, _titleLb.frame.origin.y+46, BGVIEW_WIDTH-30, 50)];
+    _promptContent.textAlignment = NSTextAlignmentCenter;
+    _promptContent.numberOfLines = 0;
+    _promptContent.font = [UIFont systemFontOfSize:15];
+    _promptContent.textColor = COLOR(102, 102, 102, 1);
+    [_bgView addSubview:_promptContent];
+}
+
+// 借记卡相关支持银行内容
+- (void)initdebitCardContent
+{
+    _debitCardContent = [[UILabel alloc]init];
+    _debitCardContent.textAlignment = NSTextAlignmentLeft;
+    _debitCardContent.numberOfLines = 0;
+    _debitCardContent.font = [UIFont systemFontOfSize:13];
+    _debitCardContent.textColor = COLOR(102, 102, 102, 1);
+    [_bgView addSubview:_debitCardContent];
+    _debitCardContent.text = @"工商银行 / 农业银行 / 中国银行 / 建设银行\n交通银行 / 招商银行 / 光大银行 / 兴业银行\n浦发银行 / 平安银行 / 上海银行 / 北京银行\n华夏银行 / 中信银行 / 广发银行";
+}
+
+// 确定按钮
+- (void)initConfirmButton
+{
+    _confirmBtn = [[UIButton alloc]initWithFrame:CGRectMake(BGVIEW_WIDTH/2, BGVIEW_HEIGHT-50, BGVIEW_WIDTH/2, 50)];
+    [_confirmBtn setTitle:@"确定" forState:UIControlStateNormal];
+    [_confirmBtn setTitleColor:COLOR(176, 25, 26, 1) forState:UIControlStateNormal];
+    _confirmBtn.titleLabel.font = [UIFont systemFontOfSize:16];
+    [_bgView addSubview:_confirmBtn];
+    [_confirmBtn addTarget:self action:@selector(confirmButton:) forControlEvents:UIControlEventTouchUpInside];
+}
+
+- (void)confirmButton:(UIButton *)button
+{
+    if (self.delegate && [self.delegate respondsToSelector:@selector(customPopUpViewConfirmBtnAction)])
+    {
+        [self.delegate customPopUpViewConfirmBtnAction];
+    }
+}
+
+// 取消按钮
+- (void)initCancelButton
+{
+    _cancelBtn = [[UIButton alloc]initWithFrame:CGRectMake(0, BGVIEW_HEIGHT-50, BGVIEW_WIDTH/2, 50)];
+    [_cancelBtn setTitle:@"取消" forState:UIControlStateNormal];
+    [_cancelBtn setTitleColor:COLOR(182, 182, 182, 1) forState:UIControlStateNormal];
+    _cancelBtn.titleLabel.font = [UIFont systemFontOfSize:16];
+    [_bgView addSubview:_cancelBtn];
+    [_cancelBtn addTarget:self action:@selector(cancelButtonAction) forControlEvents:UIControlEventTouchUpInside];
+}
+
+- (void)cancelButtonAction
+{
+    if (self.delegate && [self.delegate respondsToSelector:@selector(customPopUpViewcancelBtnAction)])
+    {
+        [self.delegate customPopUpViewcancelBtnAction];
+    }
+}
+
+// 头部图片
+- (void)initTopImageView
+{
+    _topImageView = [[UIImageView alloc]initWithFrame:CGRectMake((BGVIEW_WIDTH-113)/2, 30, 113, 113)];
+    [_bgView addSubview:_topImageView];
+}
+
+// 横分隔线
+- (void)initHorizontalLine
+{
+    _horizontalLine = [[UIView alloc]initWithFrame:CGRectMake(7, BGVIEW_HEIGHT-51, BGVIEW_WIDTH-14, 1)];
+    _horizontalLine.backgroundColor = COLOR(182, 182, 182, 1);
+    [_bgView addSubview:_horizontalLine];
+}
+
+// 竖分隔线
+- (void)initVerticalLine
+{
+    _verticalLine = [[UIView alloc]initWithFrame:CGRectMake((BGVIEW_WIDTH-1)/2, BGVIEW_HEIGHT-40, 1, 30)];
+    _verticalLine.backgroundColor = COLOR(182, 182, 182, 1);
+    [_bgView addSubview:_verticalLine];
+}
+
+// 银行弹框头部view
+- (void)initTopView
+{
+    _topView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, BGVIEW_WIDTH, 46)];
+    _topView.backgroundColor = COLOR(176, 25, 26, 1);
+    [_bgView addSubview:_topView];
+}
+
+- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+{
+    [self removeFromSuperview];
+}
+
+
+@end

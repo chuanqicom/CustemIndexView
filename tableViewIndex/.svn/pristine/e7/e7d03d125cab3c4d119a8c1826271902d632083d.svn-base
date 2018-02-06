@@ -1,0 +1,18 @@
+//
+//  AccumulationFundDetail.m
+//  GFB
+//
+//  Created by 维信金科 on 16/9/24.
+//  Copyright © 2016年 Vision Credit  Financial Technology Cpmpany Limited. All rights reserved.
+//
+
+#import "AccumulationFundDetail.h"
+
+@implementation AccumulationFundDetail
+
++ (NSDictionary *)objectClassInArray
+{
+    return @{@"FormParams" : @"FormParamsModel"};
+}
+
+@end

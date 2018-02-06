@@ -1,0 +1,68 @@
+//
+//  DataSingletonApi.m
+//  GFB
+//
+//  Created by bin xie on 2016/10/30.
+//  Copyright © 2016年 Shanghai Aopai Data Technology Co., Ltd. All rights reserved.
+//
+
+#import <UIKit/UIKit.h>
+
+//登录状态 key
+NSString *const LOGIN_STATE_KEY = @"LOGIN_STATE_KEY";
+
+//版本号
+NSString *const LASTVERSION = @"LASTVERSION";
+
+//token
+NSString *const TOKEN = @"TOKEN";
+
+//APPid
+NSString *const APPID = @"APPID";
+
+//Image路径
+NSString *const IMAGE_PATH = @"IMAGE_PATH";
+
+//客户id
+NSString *const CUSTOMERID = @"CUSTOMERID";
+
+//身份证号码
+NSString *const IDENTITY_NO = @"IDENTITY_NO";
+
+//身份证有效期
+NSString *const IDENTITY_EXPIRES = @"IDENTITY_EXPIRES";
+
+//客户姓名
+NSString *const REAL_NAME = @"REAL_NAME";
+
+//账号/手机号
+NSString *const MODILE = @"MODILE";
+
+//首页状态 page
+NSString *const PAGE = @"PAGE";
+
+//判断Token
+NSString * const CHECK_TOKEN = @"CHECK_TOKEN";
+
+//学历
+NSString *const EDUCATIONDEGREE = @"EDUCATIONDEGREE";
+
+//婚姻
+NSString *const MARRYSTATUS = @"MARRYSTATUS";
+//是否上传过手持身份证照 identityPerson
+NSString *const IDENTITYPERSON = @"IDENTITYPERSON";
+
+//是否展示登录控制器
+NSString * const IS_SHOW_LOGINVIEWCONTROLLER = @"IS_SHOW_LOGINVIEWCONTROLLER";
+
+//首页需要重新请求数据
+NSString * const HOME_NEED_REQUEST = @"HOME_NEED_REQUEST";
+
+// 手势密码忘记错误标识 登录页面选择
+NSString * const GESTUREPASSWORD_IDENTIFICATION = @"GESTUREPASSWORD_IDENTIFICATION";
+
+//推送系统消息 标识
+NSString * const SYSTEMPUSHMESSAGE_CUSTMERID = @"GFB_SystemMessage";
+
+//推送个人消息未读数
+NSString * const NOREADCOUNT = @"noReadCount";

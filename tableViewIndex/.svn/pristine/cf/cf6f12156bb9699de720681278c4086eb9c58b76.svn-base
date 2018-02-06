@@ -1,0 +1,39 @@
+//  Created by Perry on 15/4/8.
+//  Copyright (c) 2015年 SmartJ. All rights reserved.
+
+
+#import "MButton.h"
+
+@implementation MButton
+
+-(void)awakeFromNib
+{
+    [super awakeFromNib];
+}
+
+- (void)setIsCicle:(BOOL)isCicle
+{
+    _isCicle = isCicle;
+    self.layer.cornerRadius = self.bounds.size.height/2.0;
+    self.layer.masksToBounds = YES;
+}
+
+- (void)setBorderColor:(UIColor *)borderColor
+{
+    self.layer.masksToBounds = YES;
+    self.layer.borderColor = borderColor.CGColor;
+}
+
+- (void)setBorderWidth:(CGFloat)borderWidth
+{
+    self.layer.masksToBounds = YES;
+    self.layer.borderWidth = borderWidth;
+}
+
+- (void)setCornerRadius:(CGFloat)cornerRadius
+{
+    self.layer.masksToBounds = YES;
+    self.layer.cornerRadius = cornerRadius;
+}
+
+@end

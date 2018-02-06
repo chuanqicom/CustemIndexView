@@ -1,0 +1,71 @@
+//
+//  RootViewController.m
+//  CCS
+//
+//  Created by 维信金科 on 16/12/14.
+//  Copyright © 2016年 OrangeCat. All rights reserved.
+//
+
+#import "RootViewController.h"
+#import "QueryStartViewController.h"
+
+@interface RootViewController ()
+
+@end
+
+@implementation RootViewController
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
+    [button setTitle:@"查看公积金" forState:UIControlStateNormal];
+    button.backgroundColor = [UIColor redColor];
+    button.frame = CGRectMake(20, 30, APPWIDTH - 40, 49);
+    [button addTarget:self action:@selector(jumpToQueryVc:) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:button];
+    
+    UIButton *button1 = [UIButton buttonWithType:UIButtonTypeCustom];
+    [button1 setTitle:@"查看社保" forState:UIControlStateNormal];
+    button1.backgroundColor = [UIColor redColor];
+    button1.frame = CGRectMake(20, 89, APPWIDTH - 40, 49);
+    [button1 addTarget:self action:@selector(jumpToSocialSecurityVc:) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:button1];
+    
+}
+
+
+- (void)jumpToQueryVc:(UIButton *)btn{
+    
+    QueryStartViewController *queryVc = [[QueryStartViewController alloc]init];
+    [self.navigationController pushViewController:queryVc animated:YES];
+}
+
+- (void)jumpToSocialSecurityVc:(UIButton *)btn{
+    
+}
+
+
+- (NSString *)navigationTitle
+{
+    return @"信用猫";
+}
+
+
+
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+
+/*
+#pragma mark - Navigation
+
+// In a storyboard-based application, you will often want to do a little preparation before navigation
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+    // Get the new view controller using [segue destinationViewController].
+    // Pass the selected object to the new view controller.
+}
+*/
+
+@end

@@ -1,0 +1,29 @@
+//
+//  UIButton+GFBAnyRoundBtn.h
+//  GFB
+//
+//  Created by 维信金科 on 16/10/31.
+//  Copyright © 2016年 Shanghai Aopai Data Technology Co., Ltd. All rights reserved.
+//
+
+#import <UIKit/UIKit.h>
+
+typedef NS_ENUM(NSInteger, BtnRoundSide) {
+    BtnRoundSideLeft = 0, // 左边 上下 两个角
+    BtnRoundSideRight,
+    
+    BtnRoundSideTop,
+    BtnRoundSideBottom,
+    
+    BtnRoundSideTop_Left,
+    BtnRoundSideTop_Right,
+    BtnRoundSideBottom_Left,
+    BtnRoundSideBottom_Right,
+    BtnRoundSideAll
+};
+
+@interface UIButton (GFBAnyRoundBtn)
+
+- (void)roundSide:(BtnRoundSide)side withSize:(CGSize)size;
+
+@end

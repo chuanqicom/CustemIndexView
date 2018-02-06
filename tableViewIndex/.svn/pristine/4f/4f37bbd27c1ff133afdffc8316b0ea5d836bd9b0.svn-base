@@ -1,0 +1,27 @@
+//
+//  CityModel.h
+//  GFB
+//
+//  Created by 维信金科 on 16/9/24.
+//  Copyright © 2016年 Vision Credit  Financial Technology Cpmpany Limited. All rights reserved.
+//
+
+#import <Foundation/Foundation.h>
+#import "CityDetailModel.h"
+
+@interface CityModel : NSObject
+
+//城市名
+@property (nonatomic,   copy) NSString   *ProvinceName;
+@property (nonatomic,   copy) NSString   *ProvinceCode;
+@property (nonatomic,   copy) NSString   *Description;
+@property (nonatomic,   copy) NSString   *tId;
+@property (nonatomic, strong) NSArray    *CityLevel;
+
+
+//在数组中的index
+@property (nonatomic, assign) NSInteger  index;
+//首字母
+@property (nonatomic,   copy) NSString   *firstLetter;
+
+@end

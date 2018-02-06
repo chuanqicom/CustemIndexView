@@ -1,0 +1,51 @@
+//
+//  UITextField+Limit.m
+//  EkuDoctor
+//
+//  Created by David on 16/1/14.
+//
+//
+
+#import "UITextField+Limit.h"
+#import "NSString+Categories.h"
+
+@implementation UITextField (Limit)
+
+- (void)limitTextFieldWithLength:(NSInteger)maxLength {
+    NSInteger length = self.text.length;
+    if (length > maxLength) {
+        NSString *newStr = [self.text substringToIndex:maxLength];
+        self.text = newStr;
+    }
+}
+
+//通知中实现
+- (void)limitTextFieldWithBytesLength:(NSInteger)maxLength {
+    NSString* toBeString = self.text;
+    [self cutTextFieldString:toBeString bytesLength:maxLength];
+}
+
+//需要在 textField: shouldChangeCharactersInRange: replacementString: 方法中实现
+- (BOOL)isEnabledWithBytesLength:(NSInteger)maxLength shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString*)string {
+    NSString* toBeString = [self.text stringByReplacingCharactersInRange:range withString:string];
+    NSUInteger charLen = toBeString.byteLength;
+    if (charLen > maxLength) {
+        if (![string isEqualToString:@""]) {
+            if (self.text.byteLength != maxLength) {
+                [self cutTextFieldString:toBeString bytesLength:maxLength];
+            }
+            return NO;
+        }
+    }
+    return YES;
+}
+
+- (void)cutTextFieldString:(NSString *)textString bytesLength:(NSInteger)maxLength {
+    
+    while (textString.byteLength > maxLength) {
+        textString = [textString substringToIndex:textString.length - 1];
+        self.text = textString;
+    }
+}
+
+@end

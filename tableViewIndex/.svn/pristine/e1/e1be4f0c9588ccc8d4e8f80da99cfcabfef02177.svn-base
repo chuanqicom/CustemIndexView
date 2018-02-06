@@ -1,0 +1,13 @@
+//
+//  SocialSecurityViewController.h
+//  CCS
+//
+//  Created by 维信金科 on 17/1/3.
+//  Copyright © 2017年 OrangeCat. All rights reserved.
+//
+
+#import <UIKit/UIKit.h>
+
+@interface SocialSecurityViewController : GFBBaseViewController
+
+@end

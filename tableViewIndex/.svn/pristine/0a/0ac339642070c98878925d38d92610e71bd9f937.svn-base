@@ -1,0 +1,14 @@
+//
+//  GFBNavigationViewController.h
+//  GFB
+//
+//  Created by bin xie on 2016/10/30.
+//  Copyright © 2016年 Shanghai Aopai Data Technology Co., Ltd. All rights reserved.
+//
+
+#import <UIKit/UIKit.h>
+
+@interface GFBNavigationViewController : UINavigationController
+
+
+@end

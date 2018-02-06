@@ -1,0 +1,20 @@
+//
+//  CityChooseViewController.h
+//  GFB
+//
+//  Created by xiebin on 16/9/23.
+//  Copyright © 2016年 Vision Credit  Financial Technology Cpmpany Limited. All rights reserved.
+//
+
+#import "GFBBaseViewController.h"
+#import "CityModel.h"
+#import "CityDetailModel.h"
+
+@interface CityChooseViewController : GFBBaseViewController
+
+@property (nonatomic, strong) CityModel  *cityModel;
+
+//省市名字
+@property (nonatomic,   copy) NSString   *cityName;
+
+@end

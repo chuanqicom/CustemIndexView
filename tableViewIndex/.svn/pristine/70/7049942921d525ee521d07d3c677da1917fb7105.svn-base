@@ -1,0 +1,270 @@
+//
+//  GFBRequestApi.m
+//  GFB
+//
+//  Created by bin xie on 2016/10/30.
+//  Copyright © 2016年 Shanghai Aopai Data Technology Co., Ltd. All rights reserved.
+//
+
+
+#import <UIKit/UIKit.h>
+
+
+// 登录
+NSString *const LOGIN = @"/operation/login";
+
+//用户注册
+NSString *const REGISTER =@"/operation/register";
+
+//发送验证码
+NSString *const SEND_REGISTER = @"/smsValidate/send";
+
+//注册合并数据身份验证
+NSString *const IDCHECK_REGISTER = @"/operation/synchroWechatByIdentityNo";
+
+//登录密码修改
+NSString *const LOGINPASSWORD_CHANGE = @"/operation/changePassword";
+
+//登录密码重置
+NSString *const LOGINPASSWORD_RESET = @"/operation/resetPassword";
+
+//密码重置身份认证
+NSString *const RESETPASSWORD_VALIDATE = @"/smsValidate/validate";
+
+//获取用户信息
+NSString *const GET_PERSON_INFO = @"/myCenter/init/data";
+
+//我的-图片上传
+NSString *const UPLOAD = @"/customer/upload";
+
+//首页
+NSString *const HOME_PAGE = @"/home/index";
+
+
+// 判断是否有手势密码
+NSString *const PASSWORDGESTURES_IF = @"/transactionGesture/ifGesturePassword";
+
+// 验证手势密码
+NSString *const PASSWORDGESTURES_IFTRUE = @"/transactionGesture/ifgesTruePassord";
+
+// 设置手势密码
+NSString *const PASSWORDGESTURES_SETTING = @"/transactionGesture/saveGesture";
+
+// 清空手势密码
+NSString *const PASSWORDGESTURES_EMPTY = @"/transactionGesture/jumpOver";
+
+// 判断是否有交易密码
+NSString *const TRADEPASSWORD_IFWITHOUT = @"/transactionGesture/ifTranPassword";
+// 判断交易密码是否锁定
+NSString *const TRADEPASSWORD_IFLOCK = @"/transactionGesture/ifTranPasswordLock";
+// 判断交易密码对否
+NSString *const TRADEPASSWORD_RIGHT = @"/transactionGesture/ifWithdrawTranPasswordNew";
+
+// 更改交易密码
+NSString *const TRADEPASSWORD_CHANGE = @"/transactionGesture/changeTranInfo";
+
+// 新增交易密码
+NSString *const TRADEPASSWORD_NEWSET = @"/transactionGesture/savetransaction";
+
+// 忘记交易密码 身份认证
+NSString *const TRADEPASSWORD_CHECKTRANSAUTH = @"/transactionGesture/checkTransAuth";
+
+//公积金初始化城市数据接口
+NSString *const REQEST_CITY = @"/socialSecurityFund/advanceQueryCities";
+
+//公积金社保初始化验证码和token
+NSString *const AccumulationFund_Init_Token = @"/socialSecurityFund/advanceToken";
+
+//查询公积金或社保表单设置信息
+NSString *const AccumulationFund_SETTING = @"/socialSecurityFund/advanceFormSetting";
+
+//登录提交公积金__获取公积金信息
+NSString *const COMMIT_ACCUMULATION_URL = @"/socialSecurityFund/login";
+
+//更换银行卡
+NSString *const BANKCARD_REPLACE = @"/card/changeCard";
+
+//银行卡选择列表
+NSString *const BANKCARD_LIST = @"/card/bankList";
+
+//推送
+NSString *const PUSH_MESSAGE = @"/mail/queryAccountMsg";
+
+//推送更新
+NSString *const PUSH_MESSAGEUPDATE = @"/mail/updateAccountMsgStatus";
+
+/**
+ *  推送信息 notifcation name
+ */
+
+NSString *const PUSH_NOTIFNAME = @"newMessage";
+
+
+
+//初始化身份认证基本数据
+NSString *const IDENTITYINFO_DOWNLOAD = @"/customer/initIdentityInfo";
+
+//上传身份认证基本数据
+NSString *const SAVEBASIC_INFO = @"/customer/saveBasicInfo";
+
+//手持身份证照 上传接口
+NSString *const IDENTITY_UPLOAD = @"/customer/upload";
+
+//身份认证 身份证解析接口//identity
+NSString *const IDENTITY_RECOGNIZE = @"/identity/recognize";
+
+//身份认证 身份证照片下载接口
+NSString *const IDENTITY_DOWNLOAD = @"/customer/download";
+
+/**
+ *  提现初始化
+ */
+
+NSString *const CASH_INITDATA = @"/cash/initData";
+
+/**
+ *  申请提现
+ */
+
+NSString *const CASH_BUILDLOAN = @"/cash/buildLoan";
+
+/**
+ *  查看借款信用认证
+ */
+
+NSString *const VALIDATE_CREDITAUTH = @"/customer/validate/creditAuth";
+/**
+ *  查看借款详情
+ */
+
+NSString *const SEARCH_SINGLEWITHDRAWINFO = @"/myCenter/search/singleWithDrawInfo";
+
+/**
+ *  提现 选择分期
+ */
+NSString *const CASH_TRIALREPAYMENTINFO = @"/cash/trialRepaymentInfo";
+/**
+ *  提现 保存合同
+ */
+NSString *const AGREEMENT_SAVECONTRACT = @"/agreement/saveContract";
+/**
+ *  重签合同
+ */
+NSString *const AGREEMENT_PRELOADLOANCONTRACT = @"/agreement/preLoadLoanContract";
+/**
+ *  绑定银行卡
+ */
+
+NSString *const BANKCARD_BIND = @"/card/bindCard";
+
+
+/**
+ *  手机认证
+ */
+// 初始化数据
+NSString *const PHONE_INITIALIZE = @"/juxinli/mobile/init";
+
+// 提交信息
+NSString *const PHONE_SUBMITINFORMATION = @"/juxinli/mobile/req/collect";
+
+// 比对信息
+NSString *const PHONE_COMPARINGINFORMATION  = @"/juxinli/mobile/resp/collect";
+
+/**
+ *  征信认证
+ */
+// 初始化数据
+NSString *const CREDIT_INITIALIZE = @"/credit/init";
+
+// 征信登录
+NSString *const CREDIT_LOGIN = @"/credit/applyLogin";
+
+/**
+ *  征信注册
+ */
+// 第一步
+NSString *const CREDITREGISTER_ONE = @"/credit/registerOne";
+
+// 第二步
+NSString *const CREDITREGISTER_TWO = @"/credit/registerTwo";
+
+// 第三步
+NSString *const CREDITREGISTER_THREE = @"/credit/registerThree";
+
+/**
+ *   征信登陆 -- 激活码查询征信报告
+ */
+NSString *const CREDIT_GETREPORT = @"/credit/getReport";
+
+/**
+ *   征信报告银行卡认证
+ */
+// 初始化 获取图片验证码和tokenValue
+NSString *const CREDITCARD_INITIALIZE = @"/credit/unionPay/getAuthPage";
+
+// 获取银联标识
+NSString *const CREDITCARD_UNIONPAY = @"/credit/unionPay/initAuthentication";
+
+// 获取银行卡信息 判断是借记卡 还是信用卡
+NSString *const CREDITCARD_CARDINFO = @"/credit/getBankCodeInfo";
+
+// 获取手机验证码
+NSString *const CREDITCARD_PHONECODE = @"/credit/getVcode";
+
+// 提交银行卡认证信息
+NSString *const CREDITCARD_BANKCARDINFO = @"/credit/submitBankInfo";
+
+// 确认提交的银行卡认证信息
+NSString *const CREDITCARD_AUTHINFO = @"/credit/verifyAuthInfo";
+
+/**
+ *   征信报告问题认证
+ */
+// 获取问题
+NSString *const CREDITPROBLEM_GETQUSETUONS = @"/credit/getQuestions";
+
+// 回答问题提交
+NSString *const CREDITPROBLEM_SUBMITANSWER = @"/credit/submitAnswer";
+
+/**
+ *   征信报告反馈结果状态
+ */
+// 失败锁单天数状态
+NSString *const CREDITRESULTS_FAILURE = @"/customer/initDecisionUnlockedDate";
+
+//失败再次申请
+NSString *const CREDITRESULTS_APPLYAGAIN = @"/customer/recredit";
+
+// 审核中状态 刷新
+NSString *const CREDITRESULTS_REVIEWING = @"/credit/getReport";
+
+/**
+ *   账单
+ */
+// 我的账单
+NSString *const BILL_MINE = @"/order/init/data";
+
+// 查看单个借款详情
+NSString *const BILL_WITHDRAWALINFO = @"/myCenter/search/singleWithDrawInfo";
+
+// 清贷确认
+NSString *const BILL_REPAYCONFIRM = @"/repay/settleLoan";
+
+// 清贷查询
+NSString *const BILL_REPAYQUERY = @"/repay/queryInfo";
+
+
+#pragma mark ===========  信用猫 接口 ===============
+
+
+//征信查询
+NSString * const CREDITLOGIN = @"/#/creditLogin";
+
+//社保查询
+NSString * const SECURITYGUIDE = @"/#/securityLocation";
+
+
+
+
+
+

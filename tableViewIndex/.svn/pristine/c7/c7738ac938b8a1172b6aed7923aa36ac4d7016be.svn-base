@@ -1,0 +1,28 @@
+//
+//  GFBTableViewIndex.h
+//  GFB
+//
+//  Created by bin xie on 2016/11/2.
+//  Copyright © 2016年 Shanghai Aopai Data Technology Co., Ltd. All rights reserved.
+//
+
+#import <UIKit/UIKit.h>
+
+@protocol GFBTableViewIndexDelegate;
+
+@interface GFBTableViewIndex : UIView
+
+@property (nonatomic, strong) UITableView   *tableView;
+
+@property (nonatomic,   weak) id<GFBTableViewIndexDelegate> tableViewIndexdelegate;
+
+
+- (void)reloadData;
+
+@end
+
+@protocol GFBTableViewIndexDelegate <UITableViewDataSource,UITableViewDelegate>
+
+- (NSArray *)sectionIndexTitlesForTableView:(GFBTableViewIndex *)tableView;
+
+@end

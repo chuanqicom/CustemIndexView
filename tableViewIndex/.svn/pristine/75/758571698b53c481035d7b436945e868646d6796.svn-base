@@ -1,0 +1,65 @@
+//
+//  GFBAppMacro.h
+//  GFB
+//
+//  Created by David on 16/8/22.
+//  Copyright © 2016年 vcredit. All rights reserved.
+//
+
+#ifndef GFBAppMacro_h
+#define GFBAppMacro_h
+
+//app名字
+#define App_Name @"GFB"
+#define GFB_APP  (AppDelegate *)[[UIApplication sharedApplication]delegate]
+
+//屏幕宽高
+#define  APPWIDTH [UIScreen mainScreen].bounds.size.width
+#define  APPHEIGHT [UIScreen mainScreen].bounds.size.height
+#define TabBarH 64
+#define AppWindow [[UIApplication sharedApplication].delegate window]
+
+//按iPhone6的尺寸转换
+#define RATIO_W(num) (num * [UIScreen mainScreen].bounds.size.width / 375.0f)
+#define RATIO_H(num) ((num) * [UIScreen mainScreen].bounds.size.height / 667.0f)
+
+//颜色设置
+#define  ColorWith(string)  [UIColor hx_colorWithHexRGBAString:string]
+#define  UIColorFromRGB(rgbValue) [UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 green:((float)((rgbValue & 0xFF00) >> 8))/255.0 blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
+#define  COLOR(R,G,B,A) [UIColor colorWithRed:R/256.0 green:G/256.0 blue:B/256.0 alpha:A]
+#define  NAV(Controller) [[UINavigationController alloc]initWithRootViewController:Controller]
+
+////主色调
+#define  MAIN_COLOR [UIColor colorWithRed:176/255.0 green:25/255.0 blue:26/255.0 alpha:1] //主色调
+#define GRAY_BUTTON_COLOR ColorWith(@"B5B5B5") //按钮不可点击颜色
+#define RED_BUTTON_COLOR  COLOR(191, 10, 18, 1) // 按钮可点 红色
+#define  LightBlue   ColorWith(@"#50bbff")     //icon  按钮
+#define WarningTextColor ColorWith(@"ee3410")  //警告色
+
+//判断系统版本
+#define  IOS7VERSION ([[[UIDevice currentDevice] systemVersion] doubleValue]>=7.0)
+
+//判断手机设备型号
+
+#define  ISIPHONE5  [UIScreen mainScreen].bounds.size.width==320
+
+#define  ISIPHONE6  [UIScreen mainScreen].bounds.size.width==375
+
+#define  ISIPHONE6Plus [UIScreen mainScreen].bounds.size.width==414
+
+
+#pragma mark - 接口相关
+//测试环境
+//#define kBaseURL @"http://ccssit.apass.cn/appweb/data/ws/rest"
+//#define BaseURL  @"http://ccssit.apass.cn/"
+
+//王言喻 本地
+#define kBaseURL @"http://10.254.20.112:8080/appweb/data/ws/rest"
+#define BaseURL  @"http://10.254.20.112:9000"
+
+
+
+
+#define docmentPath [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) firstObject]
+
+#endif /* GFBAppMacro_h */

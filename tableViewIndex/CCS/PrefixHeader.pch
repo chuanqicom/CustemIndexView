@@ -1,0 +1,27 @@
+//
+//  PrefixHeader.pch
+//  CCS
+//
+//  Created by 维信金科 on 2018/2/6.
+//  Copyright © 2018年 OrangeCat. All rights reserved.
+//
+
+#ifndef PrefixHeader_pch
+#define PrefixHeader_pch
+
+//按iPhone6的尺寸转换
+#define RATIO_W(num) (num * [UIScreen mainScreen].bounds.size.width / 375.0f)
+#define RATIO_H(num) ((num) * [UIScreen mainScreen].bounds.size.height / 667.0f)
+
+#import <HexColors.h>
+
+//颜色设置
+#define  ColorWith(string)  [UIColor hx_colorWithHexRGBAString:string]
+#define  COLOR(R,G,B,A)     [UIColor colorWithRed:R/256.0 green:G/256.0 blue:B/256.0 alpha:A]
+#define  MAIN_COLOR         ColorWith(@"#B0191A")  // 主色调
+
+// Include any system framework and library headers here that should be included in all compilation units.
+// You will also need to set the Prefix Header build setting of one or more of your targets to reference this file.
+
+#endif /* PrefixHeader_pch */
+

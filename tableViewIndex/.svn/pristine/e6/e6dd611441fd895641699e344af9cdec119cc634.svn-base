@@ -1,0 +1,13 @@
+//
+//  RoundView.h
+//  WrapperClass
+//
+//  Created by xiebin on 16/10/4.
+//  Copyright © 2016年 xiebin. All rights reserved.
+//
+
+#import <UIKit/UIKit.h>
+
+@interface RoundView : UIView
+
+@end

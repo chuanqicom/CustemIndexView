@@ -1,0 +1,26 @@
+//
+//  AccumulationFundLoginCell.h
+//  GFB
+//
+//  Created by 维信金科 on 16/9/24.
+//  Copyright © 2016年 Vision Credit  Financial Technology Cpmpany Limited. All rights reserved.
+//
+
+#import <UIKit/UIKit.h>
+#import "FormParamsModel.h"
+
+@interface AccumulationFundLoginCell : UITableViewCell
+
+@property (nonatomic, strong) FormParamsModel *formParamsModel;
+
+@property (weak, nonatomic) IBOutlet UILabel *cellTitleLabel;
+
+@property (weak, nonatomic) IBOutlet UITextField *cellContent;
+
+@property (weak, nonatomic) IBOutlet UIImageView *codeImageView;
+
+- (void)cellWithData:(FormParamsModel *)formParamsModel;
+
+@property (nonatomic, copy) void(^callBlock)(NSString *cellTextStr,FormParamsModel *model);
+
+@end

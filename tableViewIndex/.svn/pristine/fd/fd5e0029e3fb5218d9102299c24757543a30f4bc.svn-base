@@ -1,0 +1,64 @@
+//
+//  GFBBaseViewController.h
+//  GFB
+//
+//  Created by bin xie on 2016/10/30.
+//  Copyright © 2016年 Shanghai Aopai Data Technology Co., Ltd. All rights reserved.
+//
+
+#import <UIKit/UIKit.h>
+
+#define BUTTON_FONT [UIFont systemFontOfSize:15]
+#define BUTTON_TITLE_COLOR [UIColor whiteColor]
+#define NAVIGATION_TITLE_COLOR [UIColor whiteColor]
+#define NAVIGATION_TITLE_FONT [UIFont systemFontOfSize:18]
+
+@interface GFBBaseViewController : UIViewController
+
+/**
+ *  导航栏左按钮
+ */
+@property(nonatomic, strong) UIButton *navLeftButton;
+
+/**
+ *  导航栏右按钮
+ */
+@property(nonatomic, strong) UIButton *navRightButton;
+
+/**
+ *  导航栏标题
+ */
+@property(nonatomic, strong) UILabel  *navTitleLable;
+
+
+#pragma mark - 主要方法 (must)
+
+/**
+ *  导航栏左Button事件响应
+ */
+- (void)navLeftButtonAction;
+
+/**
+ *  导航栏右Button事件响应
+ */
+- (void)navRightButtonAction;
+
+/**
+ *  设置导航栏标题
+ */
+- (NSString *)navigationTitle;
+
+#pragma mark - 辅助方法
+
+/**
+ *  初始化 NavigationBar 相关的数据。
+ *  eg. navLeftButton, navRightButton, navTitleLable
+ */
+- (void)initNavigationBar;
+
+/**
+ *  隐藏左导航栏按钮
+ */
+- (void)hiddenNavigationLeftButton;
+
+@end

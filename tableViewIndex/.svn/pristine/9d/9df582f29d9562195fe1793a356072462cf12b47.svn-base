@@ -1,0 +1,61 @@
+//
+//  AgreementViewController.m
+//  GFB
+//
+//  Created by xiebin on 16/9/28.
+//  Copyright © 2016年 Vision Credit  Financial Technology Cpmpany Limited. All rights reserved.
+//
+
+#import "AgreementViewController.h"
+#import <WebKit/WebKit.h>
+
+@interface AgreementViewController ()<WKNavigationDelegate>
+
+@property (nonatomic,strong) WKWebView *wkWebView;
+
+@end
+
+@implementation AgreementViewController
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    [GFBProgressHUD showBlockHUD];
+    
+    [self initWkWebViewController];
+}
+
+- (void)initWkWebViewController
+{
+    _wkWebView = [[WKWebView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height - TabBarH)];
+    [self.view addSubview:_wkWebView];
+    _wkWebView.navigationDelegate = self;
+
+    NSString *name = [self.userName stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@#/fundAgreement?userName=%@",BaseURL,name]];
+    
+    [_wkWebView loadRequest:[NSURLRequest requestWithURL:url]];
+}
+
+- (NSString *)navigationTitle
+{
+    return @"公积金协议";
+}
+
+- (void)webView:(WKWebView *)webView didCommitNavigation:(WKNavigation *)navigation
+{
+    [GFBProgressHUD showBlockHUD];
+}
+
+- (void)webView:(WKWebView *)webView didFinishNavigation:(null_unspecified WKNavigation *)navigation
+{
+    [GFBProgressHUD dismiss];
+}
+
+- (void)webView:(WKWebView *)webView didFailProvisionalNavigation:(null_unspecified WKNavigation *)navigation withError:(NSError *)error
+{
+    [GFBProgressHUD showNetworkError];
+}
+
+@end

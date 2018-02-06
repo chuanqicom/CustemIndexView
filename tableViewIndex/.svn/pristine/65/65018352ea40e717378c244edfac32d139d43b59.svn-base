@@ -1,0 +1,61 @@
+//
+//  HttpHelper.h
+//  testCocoaPods
+//
+//  Created by David on 16/9/21.
+//  Copyright © 2016年 David. All rights reserved.
+//
+
+#import <Foundation/Foundation.h>
+#import "AFNetworking.h"
+
+@class AFHTTPRequestOperation;
+
+/**
+ *  请求成功后的回调
+ *
+ *  @param resultDic    请求结果字典
+ *  @param responseObject 请求结果
+ *  @param code         状态码
+ *  @param errorMsg     错误信息（code不为0时）
+ */
+typedef void(^requestSuccessBlock)(id resultDic, id responseObject, NSInteger code, NSString *errorMsg);
+
+/**
+ *  请求失败回调
+ */
+typedef void (^requestFailureBlock)(NSURLSessionDataTask *operation,NSError *error);
+
+
+
+@interface HttpHelper : NSObject
+
+@property(nonatomic,strong)AFHTTPSessionManager * manager;
+
+//单例创建一个json请求的网络管理器
++(HttpHelper *)JSONRequestManager;
+
+//单例创建一个text/html请求的网络管理器
++(HttpHelper *)HTTPRequestManager;
+
+
+/**
+ *  创建post请求
+ *
+ *  @param post       接口名
+ *  @param parameters 入参
+ *  @param success    成功返回
+ *  @param failure    失败返回
+ */
+- (void)POST:(NSString *)post parameters:(id)parameters success:(requestSuccessBlock)success failure:(requestFailureBlock)failure;
+
+
+#pragma mark  -----版本------
+/**
+ *  version 1.0.0 updata in 16/08/17
+ *  使用新版afn AFHTTPSessionManager的网球请求类
+ *  json格式的Post请求 使用 [HttpHelper JSONRequestManager] 进行post
+ *  form-urlencoded格式的Post请求 使用 [HttpHelper HTTPRequestManager] 进行Post
+ */
+
+@end

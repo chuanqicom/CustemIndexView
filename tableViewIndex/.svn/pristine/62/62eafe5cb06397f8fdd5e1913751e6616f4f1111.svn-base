@@ -1,0 +1,21 @@
+//
+//  UIView+GFBExtension.h
+//  GFB
+//
+//  Created by Apple on 16/7/28.
+//  Copyright © 2016年 yan. All rights reserved.
+//
+
+#import <UIKit/UIKit.h>
+
+@interface UIView (GFBExtension)
+
+@property(nonatomic, assign) CGFloat x;
+@property(nonatomic, assign) CGFloat y;
+@property(nonatomic, assign) CGFloat width;
+@property(nonatomic, assign) CGFloat height;
+@property(nonatomic, assign) CGSize size;
+@property(nonatomic, assign) CGFloat centerX;
+@property(nonatomic, assign) CGFloat centerY;
+
+@end

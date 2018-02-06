@@ -1,0 +1,90 @@
+//
+//  RootViewController.m
+//  CCS
+//
+//  Created by 维信金科 on 16/12/14.
+//  Copyright © 2016年 OrangeCat. All rights reserved.
+//
+
+#import "RootViewController.h"
+#import "QueryStartViewController.h"
+#import "CreditViewController.h"
+#import "SocialSecurityViewController.h"
+
+#import "GFBSelectView.h"
+#define space 20
+
+#define imageH RATIO_H(190)
+
+@interface RootViewController ()
+
+@end
+
+@implementation RootViewController
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+
+    CGFloat btnSpace = ((self.view.frame.size.height - TabBarH) - 3*imageH) / 4;
+    
+    UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
+    button.frame = CGRectMake(0, btnSpace, APPWIDTH, imageH);
+    [button setImage:[UIImage imageNamed:[NSString stringWithFormat:@"公积金"]] forState:UIControlStateNormal];
+    [button addTarget:self action:@selector(jumpToQueryVc:) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:button];
+
+    
+    UIButton *button1 = [UIButton buttonWithType:UIButtonTypeCustom];
+    button1.frame = CGRectMake(0, CGRectGetMaxY(button.frame) + btnSpace, APPWIDTH , imageH);
+    [button1 setImage:[UIImage imageNamed:[NSString stringWithFormat:@"社保"]] forState:UIControlStateNormal];
+    [button1 addTarget:self action:@selector(jumpToSocialSecurityVc:) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:button1];
+
+
+    
+    UIButton *button2 = [UIButton buttonWithType:UIButtonTypeCustom];
+    button2.frame = CGRectMake(0, CGRectGetMaxY(button1.frame) + btnSpace, APPWIDTH, imageH);
+    [button2 setImage:[UIImage imageNamed:[NSString stringWithFormat:@"征信"]] forState:UIControlStateNormal];
+    [button2 addTarget:self action:@selector(jumpToCreditVc:) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:button2];
+}
+
+#pragma mark - 跳转征信
+
+- (void)jumpToCreditVc:(UIButton *)btn{
+    CreditViewController *creditVc = [[CreditViewController alloc]init];
+    [self presentViewController:creditVc animated:NO completion:nil];
+}
+
+#pragma mark - 跳转公积金
+
+- (void)jumpToQueryVc:(UIButton *)btn{
+    
+    QueryStartViewController *queryVc = [[QueryStartViewController alloc]init];
+    [self.navigationController pushViewController:queryVc animated:YES];
+}
+
+#pragma mark - 跳转社保
+
+- (void)jumpToSocialSecurityVc:(UIButton *)btn{
+    
+    SocialSecurityViewController *SSVc = [[SocialSecurityViewController alloc]init];
+    [self presentViewController:SSVc animated:NO completion:nil];
+    
+}
+
+
+- (NSString *)navigationTitle
+{
+    return @"牛信用";
+}
+
+
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+
+
+
+@end

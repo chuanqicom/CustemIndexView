@@ -1,0 +1,36 @@
+//
+//  QueryResultsViewController.h
+//  GFB
+//
+//  Created by xiebin on 16/9/23.
+//  Copyright © 2016年 Vision Credit  Financial Technology Cpmpany Limited. All rights reserved.
+//
+
+#import "GFBBaseViewController.h"
+#import "QueryResultModel.h"
+
+@interface QueryResultsViewController : GFBBaseViewController
+
+@property (nonatomic, strong) QueryResultModel *queryResultModel;
+
+
+//顶部提示label
+@property (weak, nonatomic) IBOutlet UILabel *tipLabel;
+
+//时间
+@property (weak, nonatomic) IBOutlet UILabel *timeLabel;
+
+//当月缴纳金额
+@property (weak, nonatomic) IBOutlet UILabel *monthAmount;
+
+//账户总金额
+@property (weak, nonatomic) IBOutlet UILabel *totalAmount;
+
+//账号归属地
+@property (weak, nonatomic) IBOutlet UILabel *cityNameLb;
+
+@property (nonatomic, copy) NSString         *cityName;
+
+
+
+@end
